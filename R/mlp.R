@@ -16,7 +16,7 @@
 #' @param det.type Type of deterministic seasonality dummies to use. This can be "bin" for binary or "trg" for a sine-cosine pair. With "auto" if ony a single seasonality is used and periodicity is up to 12 then "bin" is used, otherwise "trg".
 #' @param xreg Exogenous regressors. Each column is a different regressor and the sample size must be at least as long as the target in-sample set, but can be longer.
 #' @param xreg.lags This is a list containing the lags for each exogenous variable. Each list is a numeric vector containing lags. If xreg has 3 columns then the xreg.lags list must contain three elements. If NULL then it is automatically specified.
-#' @param xreg.keep List of logical vectors to force lags of xreg to stay in the model if sel.lag == TRUE. If NULL then all exogenous lags can be removed.
+#' @param xreg.keep List of logical vectors to force lags of xreg to stay in the model if sel.lag == TRUE. If NULL then all exogenous lags can be removed. The syntax for multiple xreg is the same as for xreg.lags.
 #' @param hd.auto.type Used only if hd==NULL. "set" fixes hd=5. "valid" uses a 20\% validation set (randomly) sampled to find the best number of hidden nodes. "cv" uses 5-fold cross-validation. "elm" uses ELM to estimate the number of hidden nodes (experimental).
 #' @param hd.max When hd.auto.type is set to either "valid" or "cv" then this argument can be used to set the maximum number of hidden nodes to evaluate, otherwise the maximum is set automatically.
 #' @param ... Additional inputs for neuralnet function.
@@ -112,7 +112,7 @@ mlp <- function(y,m=frequency(y),hd=NULL,reps=20,comb=c("median","mean","mode"),
     xreg.lags <- xreg.ls$xreg.lags
     xreg.keep <- xreg.ls$xreg.keep
     rm("xreg.ls")
-    
+
     # Pre-process data (same for MLP and ELM)
     PP <- preprocess(y,m,lags,keep,difforder,sel.lag,allow.det.season,det.type,ff,ff.n,xreg,xreg.lags,xreg.keep)
     Y <- PP$Y
@@ -379,10 +379,11 @@ preprocess <- function(y,m,lags,keep,difforder,sel.lag,allow.det.season,det.type
       cf.temp <- cf.temp[cf.temp!=0]
     })
     X.loc <- lags[which(colnames(X) %in% names(cf.temp))]
+
     if (x.n>0){
       Xreg.loc <- xreg.lags
       for (i in 1:x.n){
-        Xreg.loc[[i]] <- xreg.lags[[1]][which(colnames(Xreg[[i]]) %in% names(cf.temp))]
+        Xreg.loc[[i]] <- xreg.lags[[i]][which(colnames(Xreg[[i]]) %in% names(cf.temp))]
       }
       xreg.lags <- Xreg.loc
     }
