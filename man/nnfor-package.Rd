@@ -22,6 +22,7 @@ and (ii) Kourentzes et al. (2014) <doi:10.1016/j.eswa.2013.12.011>.
 Useful links:
 \itemize{
   \item \url{http://kourentzes.com/forecasting/2017/02/10/forecasting-time-series-with-neural-networks-in-r/}
+  \item Report bugs at \url{https://github.com/trnnick/nnfor/issues}
 }
 
 }
