@@ -2,10 +2,10 @@ mseastest <- function(y,m=NULL,type=c("pearson","spearman","kendall"),cma=NULL,
                       sn=1, alpha=0.05,outplot=c(0,1,2))
 {
 # Multiplicative seasonality test
-# 
+#
 # Inputs:
 #   y             Time series vector (can be ts object)
-#   m             Seasonal period. If y is a ts object then the default is its frequency  
+#   m             Seasonal period. If y is a ts object then the default is its frequency
 #   type          Test is based on:
 #                   - "pearson" correlation [Default]
 #                   - "spearman" correlation
@@ -27,11 +27,11 @@ mseastest <- function(y,m=NULL,type=c("pearson","spearman","kendall"),cma=NULL,
 #   mseastest(referrals)
 #
 # Nikolaos Kourentzes, 2014 <nikolaos@kourentzes.com>
-  
+
   # Defaults
   type <- type[1]
   outplot <- outplot[1]
-  
+
   # Get m (seasonality)
   if (is.null(m)){
     if (class(y) == "ts"){
@@ -40,20 +40,20 @@ mseastest <- function(y,m=NULL,type=c("pearson","spearman","kendall"),cma=NULL,
       stop("Seasonality not defined (y not ts object).")
     }
   }
-  
+
   # Test sn
   if (sn>m){
     sn <- m
   }
-  
+
   # Calculate CMA if not provided
   if (is.null(cma)){
     cma <- cmav(y,ma=m)
   }
-  
+
   # Remove trend from time series
   seas <- (y - cma)
-  
+
   # Convert to seasonal matrix
   n <- length(y)
   k <- m - (n %% m)
@@ -61,14 +61,14 @@ mseastest <- function(y,m=NULL,type=c("pearson","spearman","kendall"),cma=NULL,
   ns <- length(seas)/m
   seas <- matrix(seas,nrow=ns,ncol=m,byrow=TRUE)
   colnames(seas) <- paste("m",1:m,sep="")
-  
+
   # Find size of seasonality and adjust for direction (of mean size)
   mag <- colMeans(seas, na.rm = TRUE)
   idx <- order(abs(mag),decreasing=TRUE)
   ssign <- (mag<0)*-2+1
   seas <- seas*matrix(rep(ssign,ns),nrow=ns,ncol=m,byrow=TRUE)
   idx <- idx[1:sn]
-  
+
   # Measure correlation for sn seasonal periods
   cor.size <- array(NA,c(sn,1))
   cor.pvalue <- array(NA,c(sn,1))
@@ -84,16 +84,16 @@ mseastest <- function(y,m=NULL,type=c("pearson","spearman","kendall"),cma=NULL,
     cor.size[i] <- test$estimate
     cor.pvalue[i] <- test$p.value
   }
-  
+
   # Aggregate cases
   p <- median(cor.pvalue)
   c <- median(cor.size)
-  
+
   # Reset p-value for negative correlations
   if (c <= 0){
     p <- 1
   }
-  
+
   # Do test
   if (p <= alpha){
     is.multiplicative <- TRUE
@@ -102,7 +102,7 @@ mseastest <- function(y,m=NULL,type=c("pearson","spearman","kendall"),cma=NULL,
     is.multiplicative <- FALSE
     H <- "Additive"
   }
-  
+
   # Plot if requested
   if (outplot == 1){
     plot.title = paste(H, " seasonality (pval: ",round(p,3),")",sep="")
@@ -135,7 +135,7 @@ mseastest <- function(y,m=NULL,type=c("pearson","spearman","kendall"),cma=NULL,
       }
     }
   }
-  
+
   if (outplot == 2){
     cmp <- rainbow(sn)
     plot.title = paste(H, " seasonality (pval: ",round(p,3),")",sep="")
@@ -148,7 +148,7 @@ mseastest <- function(y,m=NULL,type=c("pearson","spearman","kendall"),cma=NULL,
         text(midx[1],y[midx[1]],"s1",col=cmp[1], pos=3, cex=0.7)
       }
       for (i in 2:sn){
-        midx <- seq(idx[i],n,m)  
+        midx <- seq(idx[i],n,m)
         points(midx,(y)[midx],col=cmp[i],pch=16)
         if (y[midx[1]]>cma[midx[1]]){
           text(midx[1],y[midx[1]],paste("s",i,sep=""),col=cmp[i], pos=3, cex=0.7)
@@ -158,7 +158,7 @@ mseastest <- function(y,m=NULL,type=c("pearson","spearman","kendall"),cma=NULL,
       }
     }
   }
-  
+
   return(list("is.multiplicative"=is.multiplicative,"statistic"=c,"pvalue"=p))
-  
+
 }

@@ -19,6 +19,8 @@
 #' @param xreg.keep List of logical vectors to force lags of xreg to stay in the model if sel.lag == TRUE. If NULL then all exogenous lags can be removed. The syntax for multiple xreg is the same as for xreg.lags.
 #' @param hd.auto.type Used only if hd==NULL. "set" fixes hd=5. "valid" uses a 20\% validation set (randomly) sampled to find the best number of hidden nodes. "cv" uses 5-fold cross-validation. "elm" uses ELM to estimate the number of hidden nodes (experimental).
 #' @param hd.max When hd.auto.type is set to either "valid" or "cv" then this argument can be used to set the maximum number of hidden nodes to evaluate, otherwise the maximum is set automatically.
+#' @param model A previously trained mlp object. If this is provided then the same model is fitted to y, without re-estimating any model parameters.
+#' @param retrain If a previous model is provided, retrain the network or not.
 #' @param ... Additional inputs for neuralnet function.
 #'
 #' @return Return object of class \code{mlp}.
@@ -72,7 +74,7 @@ mlp <- function(y,m=frequency(y),hd=NULL,reps=20,comb=c("median","mean","mode"),
                 lags=NULL,keep=NULL,difforder=NULL,outplot=c(FALSE,TRUE),sel.lag=c(TRUE,FALSE),
                 allow.det.season=c(TRUE,FALSE),det.type=c("auto","bin","trg"),
                 xreg=NULL, xreg.lags=NULL,xreg.keep=NULL,hd.auto.type=c("set","valid","cv","elm"),
-                hd.max=NULL, ...){
+                hd.max=NULL, model=NULL, retrain=c(FALSE,TRUE), ...){
 
     # hd.max is only relevant to valid and cv
 
@@ -83,10 +85,40 @@ mlp <- function(y,m=frequency(y),hd=NULL,reps=20,comb=c("median","mean","mode"),
     allow.det.season <- allow.det.season[1]
     det.type <- det.type[1]
     hd.auto.type <- hd.auto.type[1]
+    retrain <- retrain[1]
 
     # Check if y input is a time series
     if (!(any(class(y) == "ts") | any(class(y) == "msts"))){
       stop("Input y must be of class ts or msts.")
+    }
+
+    # Check if a model input is provided
+    if (!is.null(model)){
+      if (class(model)=="mlp"){
+        oldmodel <- TRUE
+        hd <- model$hd
+        lags <- model$lags
+        xreg.lags <- model$xreg.lags
+        difforder <- model$difforder
+        comb <- model$comb
+        det.type <- model$det.type
+        allow.det.season <- model$sdummy
+        reps <- length(model$net$weights)
+        sel.lag <- FALSE
+        # Check xreg inputs
+        x.n <- dim(xreg)[2]
+        if (is.null(x.n)){
+          x.n <- 0
+        }
+        xm.n <- length(model$xreg.minmax)
+        if (x.n != xm.n){
+          stop("Previous model xreg specification and new xreg inputs do not match.")
+        }
+      } else {
+        stop("model must be an mlp object, the output of the mlp() function.")
+      }
+    } else {
+      oldmodel <- FALSE
     }
 
     # Check xreg inputs
@@ -104,6 +136,14 @@ mlp <- function(y,m=frequency(y),hd=NULL,reps=20,comb=c("median","mean","mode"),
     ff <- ff.ls$ff
     ff.n <- ff.ls$ff.n
     rm("ff.ls")
+    # Check seasonality of old model
+    if (oldmodel == TRUE){
+      if (model$sdummy == TRUE){
+        if (!all(model$ff.det == ff)){
+          stop("Seasonality of current data and seasonality of provided model does not match.")
+        }
+      }
+    }
 
     # Default lagvector
     xreg.ls <- def.lags(lags,keep,ff,xreg.lags,xreg.keep,xreg)
@@ -144,9 +184,13 @@ mlp <- function(y,m=frequency(y),hd=NULL,reps=20,comb=c("median","mean","mode"),
              "elm" = {hd <- auto.hd.elm(Y,X,frm)}
              )
     }
-    
+
     # Create network
-    net <- neuralnet::neuralnet(frm,cbind(Y,X),hidden=hd,rep=reps,err.fct="sse",linear.output=TRUE,...)
+    if (oldmodel == FALSE | retrain == TRUE){
+      net <- neuralnet::neuralnet(frm,cbind(Y,X),hidden=hd,rep=reps,err.fct="sse",linear.output=TRUE,...)
+    } else {
+      net <- model$net
+    }
     # In case some networks did not train reduce the number of available repetitions
     reps <- length(net$weights)
 
@@ -237,7 +281,7 @@ def.lags <- function(lags,keep,ff,xreg.lags,xreg.keep,xreg){
     x.n <- dim(xreg)[2]
     xreg.lags <- rep(list(lags),x.n)
   }
-  
+
   # Check keep options
   if (!is.null(keep)){
     if (length(keep) != length(lags)){
@@ -257,7 +301,7 @@ def.lags <- function(lags,keep,ff,xreg.lags,xreg.keep,xreg){
   } else {
     xreg.keep <- lapply(unlist(lapply(xreg.lags,length)),function(x){rep(FALSE,x)})
   }
-  
+
   return(list("lags"=lags,"keep"=keep,"xreg.lags"=xreg.lags,"xreg.keep"=xreg.keep))
 }
 
