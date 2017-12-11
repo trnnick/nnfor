@@ -10,7 +10,7 @@ elm(y, m = frequency(y), hd = NULL, type = c("lasso", "ridge", "step",
   sel.lag = c(TRUE, FALSE), direct = c(FALSE, TRUE),
   allow.det.season = c(TRUE, FALSE), det.type = c("auto", "bin", "trg"),
   xreg = NULL, xreg.lags = NULL, xreg.keep = NULL, barebone = c(FALSE,
-  TRUE))
+  TRUE), model = NULL, retrain = c(FALSE, TRUE))
 }
 \arguments{
 \item{y}{Input time series. Can be ts or msts object.}
@@ -48,6 +48,10 @@ elm(y, m = frequency(y), hd = NULL, type = c("lasso", "ridge", "step",
 \item{xreg.keep}{List of logical vectors to force lags of xreg to stay in the model if sel.lag == TRUE. If NULL then all exogenous lags can be removed.}
 
 \item{barebone}{Use an alternative elm implementation (written in R) that is faster when the number of inputs is very high. Typically not needed.}
+
+\item{model}{A previously trained mlp object. If this is provided then the same model is fitted to y, without re-estimating any model parameters.}
+
+\item{retrain}{If a previous model is provided, retrain the network or not. If the network is retrained the size of the hidden layer is reset.}
 }
 \value{
 Return object of class \code{elm}. If barebone == TRUE then the object inherits a second class "\code{elm.fast}".

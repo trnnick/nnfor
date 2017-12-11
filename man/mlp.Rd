@@ -9,7 +9,8 @@ mlp(y, m = frequency(y), hd = NULL, reps = 20, comb = c("median",
   outplot = c(FALSE, TRUE), sel.lag = c(TRUE, FALSE),
   allow.det.season = c(TRUE, FALSE), det.type = c("auto", "bin", "trg"),
   xreg = NULL, xreg.lags = NULL, xreg.keep = NULL,
-  hd.auto.type = c("set", "valid", "cv", "elm"), hd.max = NULL, ...)
+  hd.auto.type = c("set", "valid", "cv", "elm"), hd.max = NULL,
+  model = NULL, retrain = c(FALSE, TRUE), ...)
 }
 \arguments{
 \item{y}{Input time series. Can be ts or msts object.}
@@ -45,6 +46,10 @@ mlp(y, m = frequency(y), hd = NULL, reps = 20, comb = c("median",
 \item{hd.auto.type}{Used only if hd==NULL. "set" fixes hd=5. "valid" uses a 20\% validation set (randomly) sampled to find the best number of hidden nodes. "cv" uses 5-fold cross-validation. "elm" uses ELM to estimate the number of hidden nodes (experimental).}
 
 \item{hd.max}{When hd.auto.type is set to either "valid" or "cv" then this argument can be used to set the maximum number of hidden nodes to evaluate, otherwise the maximum is set automatically.}
+
+\item{model}{A previously trained mlp object. If this is provided then the same model is fitted to y, without re-estimating any model parameters.}
+
+\item{retrain}{If a previous model is provided, retrain the network or not.}
 
 \item{...}{Additional inputs for neuralnet function.}
 }
