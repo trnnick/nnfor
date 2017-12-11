@@ -1,7 +1,7 @@
 Package: nnfor
 Type: Package
 Title: Time Series Forecasting with Neural Networks
-Version: 0.9.1
+Version: 0.9.2
 Authors@R: person("Nikolaos", "Kourentzes", email = "nikolaos@kourentzes.com",
                   role = c("aut", "cre"))
 Description: Contains functions to facilitate automatic time series modelling with neural networks. 

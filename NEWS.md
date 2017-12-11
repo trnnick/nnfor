@@ -1,3 +1,6 @@
+# CHANGES IN NNFOR VERSION 0.9.2 (11 Dec 2017)
+- Documentation fixes.
+
 # CHANGES IN NNFOR VERSION 0.9.2 (30 Nov 2017)
 - Added option to use previously specified mlp and elm (see arguments model and retrain).
 
