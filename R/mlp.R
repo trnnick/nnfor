@@ -115,7 +115,7 @@ mlp <- function(y,m=frequency(y),hd=NULL,reps=20,comb=c("median","mean","mode"),
           stop("Previous model xreg specification and new xreg inputs do not match.")
         }
       } else {
-        stop("model must be an mlp object, the output of the mlp() function.")
+        stop("model must be a mlp object, the output of the mlp() function.")
       }
     } else {
       oldmodel <- FALSE
@@ -489,11 +489,14 @@ preprocess <- function(y,m,lags,keep,difforder,sel.lag,allow.det.season,det.type
             ff.n.det <- length(ff.det)
             Xd <- vector("list",ff.n.det)
             for (s in 1:ff.n.det){
-                Xd[[s]] <- seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type=det.type)
-                colnames(Xd[[s]]) <- paste0("D",s,".",1:length(Xd[[s]][1,]))
-                if (det.type=="trg"){
-                    Xd[[s]] <- Xd[[s]][,1:2]
-                }
+              if (det.type=="trg"){
+                # There was a problem when the fractional seasonalities were < 3, so this is now separated
+                Xd[[s]] <- seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="trg",full=TRUE)
+                Xd[[s]] <- Xd[[s]][,1:min(length(Xd[[s]][1,]),2)]
+              } else {
+                Xd[[s]] <- seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="bin")
+              }
+              colnames(Xd[[s]]) <- paste0("D",s,".",1:length(Xd[[s]][1,]))
             }
         }
     }
@@ -588,11 +591,14 @@ seas.dum.net <- function(st,difforder,det.type,ff,ff.n,Y,y,allow.det.season){
     }
     Xd <- vector("list",ff.n)
     for (s in 1:ff.n){
-      Xd[[s]] <- seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type=det.type)
-      colnames(Xd[[s]]) <- paste0("D",s,".",1:length(Xd[[s]][1,]))
       if (det.type=="trg"){
-        Xd[[s]] <- Xd[[s]][,1:2]
+        # There was a problem when the fractional seasonalities were < 3, so this is now separated
+        Xd[[s]] <- seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="trg",full=TRUE)
+        Xd[[s]] <- Xd[[s]][,1:min(length(Xd[[s]][1,]),2)]
+      } else {
+        Xd[[s]] <- seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="bin")
       }
+      colnames(Xd[[s]]) <- paste0("D",s,".",1:length(Xd[[s]][1,]))
     }
     # Xd <- do.call(cbind,Xd)
     # X <- cbind(X,Xd)

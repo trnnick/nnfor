@@ -1,3 +1,6 @@
+# CHANGES IN NNFOR VERSION 0.9.3 (01 Apr 2018)
+- CHanges in how trigonometric seasonal dummies are handled.
+
 # CHANGES IN NNFOR VERSION 0.9.2 (11 Dec 2017)
 - Documentation fixes.
 

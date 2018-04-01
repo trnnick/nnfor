@@ -179,11 +179,14 @@ forecast.net <- function(object,h=NULL,y=NULL,xreg=NULL,...){
     Xd <- vector("list",ff.n.det)
 
     for (s in 1:ff.n.det){
-      Xd[[s]] <- seasdummy(h,m=ff.det[s],y=temp,type=det.type)
-      colnames(Xd[[s]]) <- paste0("D",s,".",1:dim(Xd[[s]])[2])
       if (det.type=="trg"){
-        Xd[[s]] <- Xd[[s]][,1:2]
+        # There was a problem when the fractional seasonalities were < 3, so this is now separated
+        Xd[[s]] <- seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="trg",full=TRUE)
+        Xd[[s]] <- Xd[[s]][,1:min(length(Xd[[s]][1,]),2)]
+      } else {
+        Xd[[s]] <- seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="bin")
       }
+      colnames(Xd[[s]]) <- paste0("D",s,".",1:length(Xd[[s]][1,]))
     }
     Xd <- do.call(cbind,Xd)
     # Xd <- seasdummy(h,y=temp,type=det.type)
