@@ -133,9 +133,11 @@ forecast.net <- function(object,h=NULL,y=NULL,xreg=NULL,...){
   ff.n.det <- length(ff.det)
 
   # Temporal aggregation can mess-up start/end of ts, so lets fix it
-  fstart <- c(end(y)[1],end(y)[2]+1)
-  if (is.na(fstart[2])){  # If the second element of end(y) does not exist because it is fractional
-    fstart <- end(y) + deltat(y)
+  fend <- end(y)
+  if (length(fend)==1){
+    fstart <- fend + deltat(y)
+  } else {
+    fstart <- fend[1] + (fend[2]-1)/frequency(y) + deltat(y)
   }
 
   # Check xreg inputs
@@ -177,14 +179,13 @@ forecast.net <- function(object,h=NULL,y=NULL,xreg=NULL,...){
   if (sdummy == TRUE){
     temp <- ts(1:h,start=fstart,frequency=max(ff.det))
     Xd <- vector("list",ff.n.det)
-
     for (s in 1:ff.n.det){
       if (det.type=="trg"){
         # There was a problem when the fractional seasonalities were < 3, so this is now separated
-        Xd[[s]] <- seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="trg",full=TRUE)
+        Xd[[s]] <- nnfor::seasdummy(h,m=ff.det[s],y=temp,type="trg",full=TRUE)
         Xd[[s]] <- Xd[[s]][,1:min(length(Xd[[s]][1,]),2)]
       } else {
-        Xd[[s]] <- seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="bin")
+        Xd[[s]] <- nnfor::seasdummy(h,m=ff.det[s],y=temp,type="bin")
       }
       colnames(Xd[[s]]) <- paste0("D",s,".",1:length(Xd[[s]][1,]))
     }

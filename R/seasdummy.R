@@ -30,9 +30,17 @@ seasdummy <- function(n,m=NULL,y=NULL,type=c("bin","trg"),full=c(FALSE,TRUE)){
       if (is.null(m)){
         m <- frequency(y)
       }
-      start <- tail(start(y),1)
+      start <- start(y)
+      # Deal with fractional seaosnalities
+      isdd <-length(start)==2
+      if (isdd){
+        start <- start[2]
+      } else {
+        start <- start %% 1
+      }
     } else {
       start <- 1
+      isdd <- TRUE
     }
 
     if (start >= n){
@@ -53,8 +61,8 @@ seasdummy <- function(n,m=NULL,y=NULL,type=c("bin","trg"),full=c(FALSE,TRUE)){
           x <- array(0,c(n.sim,m))
           t <- 1:n.sim
           for (i in 1:(m/2)){
-              x[,1+(i-1)*2] <- cos((2*t*pi*i)/m)
-              x[,2+(i-1)*2] <- sin((2*t*pi*i)/m)
+              x[,1+(i-1)*2] <- cos((2*t*pi*i)/m+(2*pi*(start-isdd))/m) # Added phase shift for start
+              x[,2+(i-1)*2] <- sin((2*t*pi*i)/m+(2*pi*(start-isdd))/m)
           }
       }
       # Trim co-linear dummy
@@ -65,12 +73,12 @@ seasdummy <- function(n,m=NULL,y=NULL,type=c("bin","trg"),full=c(FALSE,TRUE)){
       # Fractional seasonality
       x <- array(0,c(n.sim,2))
       t <- 1:n.sim
-      x[,1] <- cos((2*t*pi*i)/m)
-      x[,2] <- sin((2*t*pi*i)/m)
+      x[,1] <- cos((2*t*pi)/m+(2*pi*(start-isdd))) # Added phase shift for start
+      x[,2] <- sin((2*t*pi)/m+(2*pi*(start-isdd)))
     }
 
     # Shift for start
-    if (start > 1){
+    if (start > 1 & type == "bin"){ # For type=="trg" it is handled with a phase shift
         x <- rbind(x[start:n, ,drop=FALSE], x[1:(start - 1), ,drop=FALSE])
     }
 

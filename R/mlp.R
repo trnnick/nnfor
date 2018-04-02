@@ -491,10 +491,10 @@ preprocess <- function(y,m,lags,keep,difforder,sel.lag,allow.det.season,det.type
             for (s in 1:ff.n.det){
               if (det.type=="trg"){
                 # There was a problem when the fractional seasonalities were < 3, so this is now separated
-                Xd[[s]] <- seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="trg",full=TRUE)
+                Xd[[s]] <- nnfor::seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="trg",full=TRUE)
                 Xd[[s]] <- Xd[[s]][,1:min(length(Xd[[s]][1,]),2)]
               } else {
-                Xd[[s]] <- seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="bin")
+                Xd[[s]] <- nnfor::seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="bin")
               }
               colnames(Xd[[s]]) <- paste0("D",s,".",1:length(Xd[[s]][1,]))
             }
@@ -592,11 +592,12 @@ seas.dum.net <- function(st,difforder,det.type,ff,ff.n,Y,y,allow.det.season){
     Xd <- vector("list",ff.n)
     for (s in 1:ff.n){
       if (det.type=="trg"){
+
         # There was a problem when the fractional seasonalities were < 3, so this is now separated
-        Xd[[s]] <- seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="trg",full=TRUE)
+        Xd[[s]] <- nnfor::seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="trg",full=TRUE)
         Xd[[s]] <- Xd[[s]][,1:min(length(Xd[[s]][1,]),2)]
       } else {
-        Xd[[s]] <- seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="bin")
+        Xd[[s]] <- nnfor::seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="bin")
       }
       colnames(Xd[[s]]) <- paste0("D",s,".",1:length(Xd[[s]][1,]))
     }
