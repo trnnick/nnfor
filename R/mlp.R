@@ -578,7 +578,7 @@ ndiffs.net <- function(difforder,y,ff,st){
 seas.dum.net <- function(st,difforder,det.type,ff,ff.n,Y,y,allow.det.season){
 # Create seasonal dummies for networks
 
-  if (if(ff.n > 1){TRUE}else{!any(difforder == max(ff))}
+  if ((if(ff.n > 1){TRUE}else{!any(difforder == max(ff))})
       & frequency(y)>1 & st$season.exist==TRUE & allow.det.season==TRUE){
     sdummy <- TRUE
     # Set type of seasonal dummies
