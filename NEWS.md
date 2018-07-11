@@ -1,8 +1,5 @@
-# CHANGES IN NNFOR VERSION 0.9.4 (11 JUL 2018)
-- Fix for msts time series and allow.det.season argument.
-
 # CHANGES IN NNFOR VERSION 0.9.3 (01 Apr 2018)
-- Changes in how trigonometric seasonal dummies are handled.
+- CHanges in how trigonometric seasonal dummies are handled.
 
 # CHANGES IN NNFOR VERSION 0.9.2 (11 Dec 2017)
 - Documentation fixes.
