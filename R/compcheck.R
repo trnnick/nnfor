@@ -44,7 +44,7 @@ seasoncheck <- function(y,m=NULL,alpha=0.05,decomposition=c("multiplicative","ad
 
   # Calculate CMA if needed
   if (is.null(cma)){
-    cma <- cmav(y=y,ma=m,fill=TRUE,outplot=FALSE)
+    cma <- tsutils::cmav(y=y,ma=m,fill=TRUE,outplot=FALSE)
   }
 
   # Remove trend

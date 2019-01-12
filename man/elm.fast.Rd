@@ -5,8 +5,8 @@
 \title{ELM (fast) neural network.}
 \usage{
 elm.fast(y, x, hd = NULL, type = c("lasso", "ridge", "step", "ls"),
-  reps = 20, comb = c("median", "mean", "mode"), direct = c(FALSE, TRUE),
-  linscale = c(TRUE, FALSE), output = c("linear", "logistic"),
+  reps = 20, comb = c("median", "mean", "mode"), direct = c(FALSE,
+  TRUE), linscale = c(TRUE, FALSE), output = c("linear", "logistic"),
   core = c("FALSE", "TRUE"), ortho = c(FALSE, TRUE))
 }
 \arguments{

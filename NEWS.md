@@ -1,3 +1,7 @@
+# CHANGES IN NNFOR VERSION 0.9.5 (12 JAN 2019)
+- Removed functions mseastest, cmav and lagmatrix from nnfor. These are now available in package tsutils.
+- Updated license to GPL-3.
+
 # CHANGES IN NNFOR VERSION 0.9.4 (11 JUL 2018)
 - Fix for msts time series and allow.det.season argument.
 

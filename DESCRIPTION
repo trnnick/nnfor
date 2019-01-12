@@ -1,19 +1,19 @@
 Package: nnfor
 Type: Package
 Title: Time Series Forecasting with Neural Networks
-Version: 0.9.4
+Version: 0.9.5
 Authors@R: person("Nikolaos", "Kourentzes", email = "nikolaos@kourentzes.com",
                   role = c("aut", "cre"))
-Description: Contains functions to facilitate automatic time series modelling with neural networks. 
+Description: Automatic time series modelling with neural networks. 
     Allows fully automatic, semi-manual or fully manual specification of networks. For details of the
 	specification methodology see: (i) Crone and Kourentzes (2010) <doi:10.1016/j.neucom.2010.01.017>;
 	and (ii) Kourentzes et al. (2014) <doi:10.1016/j.eswa.2013.12.011>.
-License: GPL (>= 2)
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Depends: forecast
-Imports: glmnet, neuralnet, plotrix, MASS
+Imports: glmnet, neuralnet, plotrix, MASS, tsutils
 Suggests: thief
 URL: http://kourentzes.com/forecasting/2017/02/10/forecasting-time-series-with-neural-networks-in-r/
 BugReports: https://github.com/trnnick/nnfor/issues
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1

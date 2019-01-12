@@ -182,10 +182,10 @@ forecast.net <- function(object,h=NULL,y=NULL,xreg=NULL,...){
     for (s in 1:ff.n.det){
       if (det.type=="trg"){
         # There was a problem when the fractional seasonalities were < 3, so this is now separated
-        Xd[[s]] <- nnfor::seasdummy(h,m=ff.det[s],y=temp,type="trg",full=TRUE)
+        Xd[[s]] <- tsutils::seasdummy(h,m=ff.det[s],y=temp,type="trg",full=TRUE)
         Xd[[s]] <- Xd[[s]][,1:min(length(Xd[[s]][1,]),2)]
       } else {
-        Xd[[s]] <- nnfor::seasdummy(h,m=ff.det[s],y=temp,type="bin")
+        Xd[[s]] <- tsutils::seasdummy(h,m=ff.det[s],y=temp,type="bin")
       }
       colnames(Xd[[s]]) <- paste0("D",s,".",1:length(Xd[[s]][1,]))
     }

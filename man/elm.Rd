@@ -4,13 +4,13 @@
 \alias{elm}
 \title{Extreme learning machines for time series forecasting}
 \usage{
-elm(y, m = frequency(y), hd = NULL, type = c("lasso", "ridge", "step",
-  "lm"), reps = 20, comb = c("median", "mean", "mode"), lags = NULL,
-  keep = NULL, difforder = NULL, outplot = c(FALSE, TRUE),
-  sel.lag = c(TRUE, FALSE), direct = c(FALSE, TRUE),
-  allow.det.season = c(TRUE, FALSE), det.type = c("auto", "bin", "trg"),
-  xreg = NULL, xreg.lags = NULL, xreg.keep = NULL, barebone = c(FALSE,
-  TRUE), model = NULL, retrain = c(FALSE, TRUE))
+elm(y, m = frequency(y), hd = NULL, type = c("lasso", "ridge",
+  "step", "lm"), reps = 20, comb = c("median", "mean", "mode"),
+  lags = NULL, keep = NULL, difforder = NULL, outplot = c(FALSE,
+  TRUE), sel.lag = c(TRUE, FALSE), direct = c(FALSE, TRUE),
+  allow.det.season = c(TRUE, FALSE), det.type = c("auto", "bin",
+  "trg"), xreg = NULL, xreg.lags = NULL, xreg.keep = NULL,
+  barebone = c(FALSE, TRUE), model = NULL, retrain = c(FALSE, TRUE))
 }
 \arguments{
 \item{y}{Input time series. Can be ts or msts object.}

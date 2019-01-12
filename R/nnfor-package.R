@@ -10,4 +10,5 @@
 #' @importFrom stats alias as.formula coef cor.test deltat end frequency friedman.test lm median runif start time ts ts.plot density fft uniroot
 #' @importFrom utils head tail
 #' @importFrom forecast forecast
-"_PACKAGE"
+#' @importFrom tsutils cmav lagmatrix seasdummy mseastest
+NULL
