@@ -1,3 +1,6 @@
+# CHANGES IN NNFOR VERSION 0.9.6 (15 JAN 2019)
+- Updated dependencies
+
 # CHANGES IN NNFOR VERSION 0.9.5 (12 JAN 2019)
 - Removed functions mseastest, cmav and lagmatrix from nnfor. These are now available in package tsutils.
 - Updated license to GPL-3.

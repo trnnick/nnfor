@@ -1,3 +1,7 @@
+#' nnfor:Time Series Forecasting with Neural Networks
+#'
+#' The \pkg{nnfor} package provides automatic time series modelling with neural networks. It facilitates fully automatic, semi-manual or fully manual specification of networks, using multilayer perceptrons (\code{\link{mlp}}) and extreme learning machines (\code{\link{elm}}).
+#'
 #' @references
 #' \itemize{
 #' \item{For an introduction to neural networks see: Ord K., Fildes R., Kourentzes N. (2017) \href{http://kourentzes.com/forecasting/2017/10/16/new-forecasting-book-principles-of-business-forecasting-2e/}{Principles of Business Forecasting 2e}. \emph{Wessex Press Publishing Co.}, Chapter 10.}
@@ -5,10 +9,17 @@
 #' \item{For variable selection see: Crone S.F., Kourentzes N. (2010) \href{http://kourentzes.com/forecasting/2010/04/19/feature-selection-for-time-series-prediction-a-combined-filter-and-wrapper-approach-for-neural-networks/}{Feature selection for time series prediction – A combined filter and wrapper approach for neural networks}. \emph{Neurocomputing}, \bold{73}(\bold{10}), 1923-1936.}
 #' }
 #'
+#' @docType package
+#' @keywords package ts
+#'
+#' @author Nikolaos Kourentzes, \email{nikolaos@kourentzes.com}
+#'
+#' @name nnfor
+#'
 #' @importFrom grDevices rainbow
 #' @importFrom graphics arrows axis lines plot points text hist
 #' @importFrom stats alias as.formula coef cor.test deltat end frequency friedman.test lm median runif start time ts ts.plot density fft uniroot
 #' @importFrom utils head tail
-#' @importFrom forecast forecast
+#' @importFrom forecast forecast nsdiffs
 #' @importFrom tsutils cmav lagmatrix seasdummy mseastest
 NULL

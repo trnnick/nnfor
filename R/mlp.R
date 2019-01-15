@@ -556,7 +556,6 @@ ndiffs.net <- function(difforder,y,ff,st){
           } else {
             y.dt <- y-cma
           }
-          # Check if unit-root stochastic
           d.order <- forecast::nsdiffs(ts(y.dt,frequency=max(ff)),test="ch")
           if (d.order > 0){
             difforder <- c(difforder,max(ff))
