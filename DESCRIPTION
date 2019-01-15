@@ -12,8 +12,15 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Depends: forecast
-Imports: glmnet, neuralnet, plotrix, MASS, tsutils
-Suggests: thief
+Imports: 
+    glmnet,
+    neuralnet,
+    plotrix,
+    MASS,
+    tsutils,
+    uroot
+Suggests: 
+    thief
 URL: http://kourentzes.com/forecasting/2017/02/10/forecasting-time-series-with-neural-networks-in-r/
 BugReports: https://github.com/trnnick/nnfor/issues
 RoxygenNote: 6.1.1
