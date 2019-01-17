@@ -2,6 +2,8 @@
 #'
 #' The \pkg{nnfor} package provides automatic time series modelling with neural networks. It facilitates fully automatic, semi-manual or fully manual specification of networks, using multilayer perceptrons (\code{\link{mlp}}) and extreme learning machines (\code{\link{elm}}).
 #'
+#' @note You can find a tutorial how to use the package \href{http://kourentzes.com/forecasting/2019/01/16/tutorial-for-the-nnfor-r-package/}{here}.
+#'
 #' @references
 #' \itemize{
 #' \item{For an introduction to neural networks see: Ord K., Fildes R., Kourentzes N. (2017) \href{http://kourentzes.com/forecasting/2017/10/16/new-forecasting-book-principles-of-business-forecasting-2e/}{Principles of Business Forecasting 2e}. \emph{Wessex Press Publishing Co.}, Chapter 10.}

@@ -21,6 +21,6 @@ Imports:
     uroot
 Suggests: 
     thief
-URL: http://kourentzes.com/forecasting/2017/02/10/forecasting-time-series-with-neural-networks-in-r/
+URL: http://kourentzes.com/forecasting/2019/01/16/tutorial-for-the-nnfor-r-package/
 BugReports: https://github.com/trnnick/nnfor/issues
 RoxygenNote: 6.1.1

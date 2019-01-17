@@ -5,7 +5,7 @@ Time series modelling with neural networks for R: nnfor package
 
 
 Development repository for the nnfor package for R.
-Stable version available on [CRAN](https://cran.r-project.org/web/packages/nnfor/index.html).
+Stable version available on [CRAN](https://cran.r-project.org/package=nnfor).
 
 ## Installing
 
@@ -18,6 +18,9 @@ Otherwise, install the stable version from CRAN:
 ```{r}
 install.packages("nnfor")
 ```
+
+## Tutorial
+You can find a tutorial on using nnfor for time series forecasting [here](http://kourentzes.com/forecasting/2019/01/16/tutorial-for-the-nnfor-r-package/).
 
 ## Author
 Nikolaos Kourentzes - (http://nikolaos.kourentzes.com/)
