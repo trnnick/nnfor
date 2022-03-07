@@ -10,9 +10,9 @@ Description: Automatic time series modelling with neural networks.
 	and (ii) Kourentzes et al. (2014) <doi:10.1016/j.eswa.2013.12.011>.
 License: GPL-3
 Encoding: UTF-8
-LazyData: true
+Depends:
+    generics (>= 0.1.2)
 Imports:
-    generics (>= 0.1.2),
     forecast,
     glmnet,
     neuralnet,
