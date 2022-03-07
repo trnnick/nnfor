@@ -1,3 +1,5 @@
+.RData
+.Rhistory
 sync.ffs_db
 *.ffs_db
 *.ffs_db
