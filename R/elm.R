@@ -76,8 +76,7 @@
 #'  plot(frc)
 #' }
 #'
-#' @export elm
-
+#' @export
 elm <- function(y,m=frequency(y),hd=NULL,type=c("lasso","ridge","step","lm"),reps=20,comb=c("median","mean","mode"),
                 lags=NULL,keep=NULL,difforder=NULL,outplot=c(FALSE,TRUE),sel.lag=c(TRUE,FALSE),direct=c(FALSE,TRUE),
                 allow.det.season=c(TRUE,FALSE),det.type=c("auto","bin","trg"),
