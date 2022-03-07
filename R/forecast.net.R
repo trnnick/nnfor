@@ -40,8 +40,6 @@
 #' }
 #'
 #' @export
-#' @method forecast elm
-
 forecast.elm <- function(object,h=NULL,y=NULL,xreg=NULL,...){
   forecast.net(object,h=h,y=y,xreg=xreg,...)
 }
@@ -76,8 +74,6 @@ forecast.elm <- function(object,h=NULL,y=NULL,xreg=NULL,...){
 #' }
 #'
 #' @export
-#' @method forecast mlp
-#'
 forecast.mlp <- function(object,h=NULL,y=NULL,xreg=NULL,...){
   forecast.net(object,h=h,y=y,xreg=xreg,...)
 }

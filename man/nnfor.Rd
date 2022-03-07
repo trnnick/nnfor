@@ -3,7 +3,6 @@
 \docType{package}
 \name{nnfor}
 \alias{nnfor}
-\alias{nnfor-package}
 \title{nnfor:Time Series Forecasting with Neural Networks}
 \description{
 The \pkg{nnfor} package provides automatic time series modelling with neural networks. It facilitates fully automatic, semi-manual or fully manual specification of networks, using multilayer perceptrons (\code{\link{mlp}}) and extreme learning machines (\code{\link{elm}}).
