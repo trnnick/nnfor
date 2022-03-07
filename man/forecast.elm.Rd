@@ -34,7 +34,7 @@ An object of classes "\code{forecast.net}" and "\code{forecast}".
 Create forecasts using ELM neural networks.
 }
 \examples{
-\dontshow{
+\dontrun{
  fit <- elm(AirPassengers,reps=1)
  frc <- forecast(fit,h=36)
  print(frc)

@@ -26,7 +26,7 @@
 #' @keywords elm thief ts
 #'
 #' @examples
-#' \dontshow{
+#' \dontrun{
 #'  fit <- elm(AirPassengers,reps=1)
 #'  frc <- forecast(fit,h=36)
 #'  print(frc)
@@ -60,7 +60,7 @@ forecast.elm <- function(object,h=NULL,y=NULL,xreg=NULL,...){
 #' @keywords mlp thief ts
 #'
 #' @examples
-#' \dontshow{
+#' \dontrun{
 #'  fit <- mlp(AirPassengers,reps=1)
 #'  frc <- forecast(fit,h=36)
 #'  print(frc)

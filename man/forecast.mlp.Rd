@@ -34,7 +34,7 @@ An object of classes "\code{forecast.net}" and "\code{forecast}".
 Create forecasts using MLP neural networks.
 }
 \examples{
-\dontshow{
+\dontrun{
  fit <- mlp(AirPassengers,reps=1)
  frc <- forecast(fit,h=36)
  print(frc)
