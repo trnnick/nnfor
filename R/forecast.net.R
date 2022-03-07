@@ -26,7 +26,7 @@
 #' @keywords elm thief ts
 #'
 #' @examples
-#' \dontshow{
+#' \dontrun{
 #'  fit <- elm(AirPassengers,reps=1)
 #'  frc <- forecast(fit,h=36)
 #'  print(frc)
@@ -40,8 +40,6 @@
 #' }
 #'
 #' @export
-#' @method forecast elm
-
 forecast.elm <- function(object,h=NULL,y=NULL,xreg=NULL,...){
   forecast.net(object,h=h,y=y,xreg=xreg,...)
 }
@@ -62,7 +60,7 @@ forecast.elm <- function(object,h=NULL,y=NULL,xreg=NULL,...){
 #' @keywords mlp thief ts
 #'
 #' @examples
-#' \dontshow{
+#' \dontrun{
 #'  fit <- mlp(AirPassengers,reps=1)
 #'  frc <- forecast(fit,h=36)
 #'  print(frc)
@@ -76,8 +74,6 @@ forecast.elm <- function(object,h=NULL,y=NULL,xreg=NULL,...){
 #' }
 #'
 #' @export
-#' @method forecast mlp
-#'
 forecast.mlp <- function(object,h=NULL,y=NULL,xreg=NULL,...){
   forecast.net(object,h=h,y=y,xreg=xreg,...)
 }

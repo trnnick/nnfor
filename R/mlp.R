@@ -556,7 +556,7 @@ ndiffs.net <- function(difforder,y,ff,st){
           } else {
             y.dt <- y-cma
           }
-          d.order <- forecast::nsdiffs(ts(y.dt,frequency=max(ff)),test="ch")
+          d.order <- nsdiffs(ts(y.dt,frequency=max(ff)),test="ch")
           if (d.order > 0){
             difforder <- c(difforder,max(ff))
           }
@@ -767,6 +767,7 @@ auto.hd.cv <- function(Y,X,frm,comb,reps,type=c("cv","valid"),hd.max=NULL){
 
 }
 
+#' @importFrom forecast is.constant
 frc.comb <- function(Yhat,comb,na.rm=c(FALSE,TRUE)){
   # Combine forecasts
   na.rm <- na.rm[1]
@@ -780,7 +781,7 @@ frc.comb <- function(Yhat,comb,na.rm=c(FALSE,TRUE)){
                      Ytemp <- Yhat
                      Ytemp <- Ytemp[, colSums(is.na(Ytemp))==0]
                      # Calculate only for non-constants
-                     idx <- !apply(Ytemp,1,forecast::is.constant)
+                     idx <- !apply(Ytemp,1,is.constant)
                      k <- sum(idx)
                      yout <- Yhat[,1]
                      if (k>0){

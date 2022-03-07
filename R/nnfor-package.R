@@ -22,6 +22,7 @@
 #' @importFrom graphics arrows axis lines plot points text hist
 #' @importFrom stats alias as.formula coef cor.test deltat end frequency friedman.test lm median runif start time ts ts.plot density fft uniroot
 #' @importFrom utils head tail
-#' @importFrom forecast forecast nsdiffs
+#' @importFrom forecast nsdiffs
+#' @importFrom generics forecast
 #' @importFrom tsutils cmav lagmatrix seasdummy mseastest
 NULL

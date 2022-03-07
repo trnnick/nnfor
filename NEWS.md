@@ -1,3 +1,6 @@
+# CHANGES IN NNFOR VERSION 0.9.7 (07 Mar 2022)
+- Import forecast from generics package
+
 # CHANGES IN NNFOR VERSION 0.9.6 (15 JAN 2019)
 - Updated dependencies
 

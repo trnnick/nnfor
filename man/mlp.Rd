@@ -7,8 +7,8 @@
 mlp(y, m = frequency(y), hd = NULL, reps = 20, comb = c("median",
   "mean", "mode"), lags = NULL, keep = NULL, difforder = NULL,
   outplot = c(FALSE, TRUE), sel.lag = c(TRUE, FALSE),
-  allow.det.season = c(TRUE, FALSE), det.type = c("auto", "bin",
-  "trg"), xreg = NULL, xreg.lags = NULL, xreg.keep = NULL,
+  allow.det.season = c(TRUE, FALSE), det.type = c("auto", "bin", "trg"),
+  xreg = NULL, xreg.lags = NULL, xreg.keep = NULL,
   hd.auto.type = c("set", "valid", "cv", "elm"), hd.max = NULL,
   model = NULL, retrain = c(FALSE, TRUE), ...)
 }

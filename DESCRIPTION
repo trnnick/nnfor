@@ -1,7 +1,7 @@
 Package: nnfor
 Type: Package
 Title: Time Series Forecasting with Neural Networks
-Version: 0.9.6
+Version: 0.9.7
 Authors@R: person("Nikolaos", "Kourentzes", email = "nikolaos@kourentzes.com",
                   role = c("aut", "cre"))
 Description: Automatic time series modelling with neural networks. 
@@ -11,8 +11,9 @@ Description: Automatic time series modelling with neural networks.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Depends: forecast
-Imports: 
+Imports:
+    generics (>= 0.1.2),
+    forecast,
     glmnet,
     neuralnet,
     plotrix,
@@ -23,4 +24,5 @@ Suggests:
     thief
 URL: http://kourentzes.com/forecasting/2019/01/16/tutorial-for-the-nnfor-r-package/
 BugReports: https://github.com/trnnick/nnfor/issues
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.2
+Roxygen: list(old_usage = TRUE)
