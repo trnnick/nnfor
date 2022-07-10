@@ -1,3 +1,9 @@
+# CHANGED IN NNFOR VERSION 0.9.7 (07 JUL 2022)
+- Added warning when predict() is called for ELM and MLP. 
+
+# CHANGED IN NNFOR VERSION 0.9.7 (05 JUL 2022)
+- Updated dependencies
+
 # CHANGES IN NNFOR VERSION 0.9.6 (15 JAN 2019)
 - Updated dependencies
 

@@ -40,10 +40,16 @@
 #' }
 #'
 #' @export
-#' @method forecast elm
-
 forecast.elm <- function(object,h=NULL,y=NULL,xreg=NULL,...){
   forecast.net(object,h=h,y=y,xreg=xreg,...)
+}
+
+#' @export
+predict.elm <- function(object,...){
+  if (is(object,"elm")){
+    warning("Use forecast() instead of predict() for ELM.")
+    forecast.elm(object,...)
+  }
 }
 
 #' @rdname forecast.mlp
@@ -76,12 +82,19 @@ forecast.elm <- function(object,h=NULL,y=NULL,xreg=NULL,...){
 #' }
 #'
 #' @export
-#' @method forecast mlp
-#'
 forecast.mlp <- function(object,h=NULL,y=NULL,xreg=NULL,...){
   forecast.net(object,h=h,y=y,xreg=xreg,...)
 }
 
+#' @export
+predict.mlp <- function(object,...){
+  if (is(object,"mlp")){
+    warning("Use forecast() instead of predict() for MLP.")
+    forecast.mlp(object,...)
+  }
+}
+
+#' @export
 forecast.net <- function(object,h=NULL,y=NULL,xreg=NULL,...){
   # Produce forecast with NNs
 
@@ -108,7 +121,7 @@ forecast.net <- function(object,h=NULL,y=NULL,xreg=NULL,...){
     reps <- length(net$weights)
   }
   # Get additional ELM definitions
-  if (any(class(object) == "elm")){
+  if (is(object,"elm")){
     direct <- object$direct
     W.in <- object$W.in
     W <- object$W
@@ -233,7 +246,7 @@ forecast.net <- function(object,h=NULL,y=NULL,xreg=NULL,...){
       }
 
       # Calculate forecasts
-      if (any(class(object) == "mlp")){
+      if (is(object,"mlp")){
         yhat.sc <- neuralnet::compute(net,xi,r)$net.result
       } else {
         # EML
@@ -281,3 +294,8 @@ forecast.net <- function(object,h=NULL,y=NULL,xreg=NULL,...){
   return(structure(out,class=c("forecast.net","forecast")))
 
 }
+
+#' #' @export
+#' forecast <- function(x, ...){
+#'   UseMethod("forecast")
+#' }

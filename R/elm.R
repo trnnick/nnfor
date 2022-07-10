@@ -54,9 +54,9 @@
 #' @seealso \code{\link{forecast.elm}}, \code{\link{elm.thief}}, \code{\link{mlp}}.
 #' @references
 #' \itemize{
-#' \item{For an introduction to neural networks see: Ord K., Fildes R., Kourentzes N. (2017) \href{http://kourentzes.com/forecasting/2017/10/16/new-forecasting-book-principles-of-business-forecasting-2e/}{Principles of Business Forecasting 2e}. \emph{Wessex Press Publishing Co.}, Chapter 10.}
-#' \item{For combination operators see: Kourentzes N., Barrow B.K., Crone S.F. (2014) \href{http://kourentzes.com/forecasting/2014/04/19/neural-network-ensemble-operators-for-time-series-forecasting/}{Neural network ensemble operators for time series forecasting}. \emph{Expert Systems with Applications}, \bold{41}(\bold{9}), 4235-4244.}
-#' \item{For variable selection see: Crone S.F., Kourentzes N. (2010) \href{http://kourentzes.com/forecasting/2010/04/19/feature-selection-for-time-series-prediction-a-combined-filter-and-wrapper-approach-for-neural-networks/}{Feature selection for time series prediction – A combined filter and wrapper approach for neural networks}. \emph{Neurocomputing}, \bold{73}(\bold{10}), 1923-1936.}
+#' \item{For an introduction to neural networks see: Ord K., Fildes R., Kourentzes N. (2017) \href{https://kourentzes.com/forecasting/2017/10/16/new-forecasting-book-principles-of-business-forecasting-2e/}{Principles of Business Forecasting 2e}. \emph{Wessex Press Publishing Co.}, Chapter 10.}
+#' \item{For combination operators see: Kourentzes N., Barrow B.K., Crone S.F. (2014) \href{https://kourentzes.com/forecasting/2014/04/19/neural-network-ensemble-operators-for-time-series-forecasting/}{Neural network ensemble operators for time series forecasting}. \emph{Expert Systems with Applications}, \bold{41}(\bold{9}), 4235-4244.}
+#' \item{For variable selection see: Crone S.F., Kourentzes N. (2010) \href{https://kourentzes.com/forecasting/2010/04/19/feature-selection-for-time-series-prediction-a-combined-filter-and-wrapper-approach-for-neural-networks/}{Feature selection for time series prediction – A combined filter and wrapper approach for neural networks}. \emph{Neurocomputing}, \bold{73}(\bold{10}), 1923-1936.}
 #' \item{For ELMs see: Huang G.B., Zhou H., Ding X. (2006) Extreme learning machine: theory and applications. \emph{Neurocomputing}, \bold{70}(\bold{1}), 489-501.}
 #' }
 #' @keywords mlp thief ts
@@ -95,13 +95,13 @@ elm <- function(y,m=frequency(y),hd=NULL,type=c("lasso","ridge","step","lm"),rep
   retrain <- retrain[1]
 
   # Check if y input is a time series
-  if (!(any(class(y) == "ts") | any(class(y) == "msts"))){
+  if (!(is(y,"ts") | is(y,"msts"))){
     stop("Input y must be of class ts or msts.")
   }
 
   # Check if a model input is provided
   if (!is.null(model)){
-    if (any(class(model)=="elm")){
+    if (is(model,"elm")){
       oldmodel <- TRUE
       if (retrain == FALSE){
         hd <- model$hd
@@ -116,7 +116,7 @@ elm <- function(y,m=frequency(y),hd=NULL,type=c("lasso","ridge","step","lm"),rep
       type <- model$type
       reps <- length(model$b)
       sel.lag <- FALSE
-      if (any(class(model)=="elm.fast")){
+      if (is(model,"elm.fast")){
         barebone <- TRUE
       }
       # Check xreg inputs

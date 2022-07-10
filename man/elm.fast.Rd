@@ -4,10 +4,19 @@
 \alias{elm.fast}
 \title{ELM (fast) neural network.}
 \usage{
-elm.fast(y, x, hd = NULL, type = c("lasso", "ridge", "step", "ls"),
-  reps = 20, comb = c("median", "mean", "mode"), direct = c(FALSE,
-  TRUE), linscale = c(TRUE, FALSE), output = c("linear", "logistic"),
-  core = c("FALSE", "TRUE"), ortho = c(FALSE, TRUE))
+elm.fast(
+  y,
+  x,
+  hd = NULL,
+  type = c("lasso", "ridge", "step", "ls"),
+  reps = 20,
+  comb = c("median", "mean", "mode"),
+  direct = c(FALSE, TRUE),
+  linscale = c(TRUE, FALSE),
+  output = c("linear", "logistic"),
+  core = c("FALSE", "TRUE"),
+  ortho = c(FALSE, TRUE)
+)
 }
 \arguments{
 \item{y}{Target variable.}
@@ -82,7 +91,7 @@ This implementation of ELM is more appropriate when the number of inputs is seve
 }
 \references{
 \itemize{
-\item{For combination operators see: Kourentzes N., Barrow B.K., Crone S.F. (2014) \href{http://kourentzes.com/forecasting/2014/04/19/neural-network-ensemble-operators-for-time-series-forecasting/}{Neural network ensemble operators for time series forecasting}. \emph{Expert Systems with Applications}, \bold{41}(\bold{9}), 4235-4244.}
+\item{For combination operators see: Kourentzes N., Barrow B.K., Crone S.F. (2014) \href{https://kourentzes.com/forecasting/2014/04/19/neural-network-ensemble-operators-for-time-series-forecasting/}{Neural network ensemble operators for time series forecasting}. \emph{Expert Systems with Applications}, \bold{41}(\bold{9}), 4235-4244.}
 \item{For ELMs see: Huang G.B., Zhou H., Ding X. (2006) Extreme learning machine: theory and applications. \emph{Neurocomputing}, \bold{70}(\bold{1}), 489-501.}
 }
 }
