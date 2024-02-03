@@ -250,9 +250,11 @@ mlp <- function(y,m=frequency(y),hd=NULL,reps=20,comb=c("median","mean","mode"),
 
     }
 
+    resid <- (y - yout)
+
     return(structure(list("net"=net,"hd"=hd,"lags"=lags,"xreg.lags"=xreg.lags,"difforder"=difforder,"sdummy"=sdummy,"ff.det"=ff.det,
                           "det.type"=det.type,"y"=y,"minmax"=sc$minmax,"xreg.minmax"=xreg.minmax,"comb"=comb,"fitted"=yout,
-                          "MSE"=MSE,"MSEH"=mseH),class="mlp"))
+                          "residuals" = resid,"MSE"=MSE,"MSEH"=mseH),class="mlp"))
 
 }
 
