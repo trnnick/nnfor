@@ -1,7 +1,7 @@
 Package: nnfor
 Type: Package
 Title: Time Series Forecasting with Neural Networks
-Version: 0.9.9
+Version: 0.10.0
 Authors@R: person("Nikolaos", "Kourentzes", email = "nikolaos@kourentzes.com",
                   role = c("aut", "cre"))
 Description: Automatic time series modelling with neural networks. 
@@ -20,9 +20,11 @@ Imports:
     MASS,
     tsutils (>= 0.9.5),
     uroot,
-    parallel
+    parallel,
+    datasets
 Suggests: 
     thief,
+    torch,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 URL: https://kourentzes.com/forecasting/2019/01/16/tutorial-for-the-nnfor-r-package/

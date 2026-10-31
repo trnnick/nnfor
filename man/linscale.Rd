@@ -16,8 +16,8 @@ linscale(x, minmax = NULL, rev = FALSE)
 \value{
 Outputs a list with elements:
 \itemize{
-\item{\code{x} - Scaled vector.}
-\item{\code{minmax} - List with resulting mn, mx, mn.orig and mx.orig. Can be used as input to reverse scaling.}
+\item \code{x} - Scaled vector.
+\item \code{minmax} - List with resulting mn, mx, mn.orig and mx.orig. Can be used as input to reverse scaling.
 }
 }
 \description{

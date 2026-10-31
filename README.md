@@ -11,15 +11,45 @@ Stable version available on [CRAN](https://cran.r-project.org/package=nnfor).
 
 ## Installing
 
-To install the development version use:
-```{r}
-if (!require("devtools")){install.packages("devtools")}
-devtools::install_github("trnnick/nnfor")
+To install the development version from GitHub use:
+```r
+if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
+remotes::install_github("trnnick/tsutils")  # nnfor needs tsutils >= 0.9.5
+remotes::install_github("trnnick/nnfor")
 ```
 Otherwise, install the stable version from CRAN:
-```{r}
+```r
 install.packages("nnfor")
 ```
+
+## Backends
+
+`mlp()` trains networks with [neuralnet](https://CRAN.R-project.org/package=neuralnet) by default, which is installed with nnfor. As an option, networks can be trained with [torch](https://torch.mlverse.org), which offers modern activation functions (e.g. tanh, ReLU, GELU, SiLU) and optimizers (e.g. Adam, AdamW, RMSprop), custom architectures, and trains all networks of an ensemble simultaneously. torch is not needed for anything else in nnfor, so it does not have to be installed.
+
+To use torch, install the package and then its libraries (a one-off download of a few hundred MB):
+```r
+install.packages("torch")
+torch::install_torch()
+```
+See the [torch installation guide](https://torch.mlverse.org/docs/articles/installation.html) if this step fails. Then choose the backend when fitting:
+```r
+library(nnfor)
+# torch with neuralnet's training setup (logistic activation, Rprop)
+fit <- mlp(AirPassengers, backend = "torch")
+# torch with the settings suggested in ?mlp
+fit <- mlp(AirPassengers, backend = "torch", act.fct = "gelu",
+           algorithm = "adam", learningrate = 0.01, stepmax = 3000)
+plot(forecast(fit, h = 24))
+```
+Settings accept neuralnet's names (e.g. `act.fct = "logistic"`, `algorithm = "rprop+"`) as well as torch's. With torch, `hd` can also be a function returning a custom architecture. Networks are trained on the CPU, which is efficient for networks of this size.
+
+To compare the backends on a series, with run times and in-sample and out-of-sample errors:
+```r
+cmp <- compare_backends(AirPassengers)
+print(cmp)
+plot(cmp)
+```
+`?mlp` describes the torch settings and the differences between the backends, and `plot(nnfor_map("mlp"))` shows where training sits among the modelling steps.
 
 ## Tutorial
 You can find a tutorial on using nnfor for time series forecasting [here](https://kourentzes.com/forecasting/2019/01/16/tutorial-for-the-nnfor-r-package/).

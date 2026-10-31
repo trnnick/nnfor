@@ -39,7 +39,10 @@ print_network <- function(x) {
   reps <- n_members(x)
   hd <- x$hd
 
-  hdt <- if (is.fast) {
+  custom <- is.function(hd)
+  hdt <- if (custom) {
+    "a custom architecture of"
+  } else if (is.fast) {
     paste0(min(hd), " up to ", max(hd))
   } else if (length(hd) > 1) {
     paste0("(", paste0(hd, collapse = ","), ")")
@@ -48,9 +51,17 @@ print_network <- function(x) {
   }
 
   writeLines(paste0(if (is.elm) "ELM" else "MLP", if (is.fast) " (fast)" else "",
-                    " fit with ", hdt, " hidden node", plural(any(hd > 1)),
+                    " fit with ", hdt, if (custom) " hidden layers" else
+                      paste0(" hidden node", plural(any(hd > 1))),
                     if (is.elm) direct_text(x) else "",
                     " and ", reps, " repetition", plural(reps > 1), "."))
+  if (identical(x$backend, "torch")) {
+    s <- x$net$settings
+    writeLines(paste0("Trained with torch: ", if (custom) "" else
+                        paste0(if (is.function(s$act.fct)) "custom" else s$act.fct, " activation, "),
+                      s$algorithm, ", ", sum(x$net$converged), " of ", reps,
+                      " member", plural(reps > 1), " converged."))
+  }
   if (length(x$difforder) > 0) {
     writeLines(paste0("Series modelled in differences: ", paste0("D", x$difforder, collapse = ""), "."))
   }

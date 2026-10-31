@@ -18,8 +18,8 @@
 \value{
 Returns a list with:
 \itemize{
-\item{\code{Y.hat}{ - Ensemble prediction.}}
-\item{\code{Y.all}{ - Predictions of each training repetition.}}
+\item \code{Y.hat}: Ensemble prediction.
+\item \code{Y.all}: Predictions of each training repetition.
 }
 }
 \description{

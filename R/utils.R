@@ -59,9 +59,16 @@ check_xreg <- function(xreg, xreg.lags, y) {
   xreg
 }
 
-check_hd <- function(hd) {
+check_hd <- function(hd, backend = "neuralnet") {
+  if (is.function(hd)) {
+    if (backend != "torch") {
+      stop("A custom architecture (hd given as a function) needs backend = \"torch\".", call. = FALSE)
+    }
+    return(hd)
+  }
   if (!is.null(hd) && (!is.numeric(hd) || any(hd < 1) || any(hd %% 1 != 0))) {
-    stop("Argument `hd' must be NULL or a vector of positive integers.", call. = FALSE)
+    stop("Argument `hd' must be NULL, a vector of positive integers, or (torch) a function returning the hidden layers.",
+         call. = FALSE)
   }
   hd
 }

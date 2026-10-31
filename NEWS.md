@@ -1,3 +1,22 @@
+# CHANGES IN NNFOR VERSION 0.10.0
+- New torch backend for `mlp()`: `backend = "torch"` (torch is optional, in
+  Suggests). By default it reproduces neuralnet's training setup (logistic
+  hidden layers, Rprop, the same stopping rule and starting weights drawn as
+  neuralnet draws them). Activation functions (`act.fct`) and optimizers
+  (`algorithm`) can be switched, using neuralnet's or torch's names. All
+  ensemble members are trained simultaneously as one batch of tensors.
+- Custom architectures with torch: `hd` can be a function returning the hidden
+  layers as a torch module; nnfor handles inputs, output layer and forecasting.
+- New `compare_backends()`: fits and forecasts a series with each backend,
+  reporting run times and in-sample and out-of-sample MSE.
+- `?mlp` documents the torch settings, suggested settings for torch and the
+  differences between the backends.
+- `nnfor_map()` shows the backend used by a fitted network.
+- The hidden-node search (`hd.auto.type = "valid"` or `"cv"`) now uses the
+  training settings passed in `...`, so the size is chosen for the network
+  that is then trained. Previously it used default settings.
+- A warning is given when `hd.auto.type` is set but ignored because `hd` is given.
+
 # CHANGES IN NNFOR VERSION 0.9.9
 - Major refactoring: Preprocessing split into focused steps (differencing and 
   scaling, lagged inputs, seasonal dummies, input selection). Training and 

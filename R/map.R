@@ -132,7 +132,7 @@ map_fit <- function(model) {
     train <- rbind(
       map_node("hidden", "select_hidden_cv() / _elm()", "number of hidden nodes by validation, CV or ELM",
                "hd", 5, 1, "select_hidden_cv", "mlp", "if hd = NULL"),
-      map_node("train", "backend$train()", "train reps networks (neuralnet)", "net", 5, 2,
+      map_node("train", "backend$train()", "train reps networks with neuralnet or torch", "net", 5, 2,
                "nn_backend", "mlp"),
       map_node("predict", "backend$predict()", "in-sample output of each member", "scaled fit per member",
                5, 3, "predict_members", "mlp")
@@ -241,7 +241,9 @@ annotate_map <- function(map, fit) {
     set("xreg", if (has.xreg) paste(length(fit$xreg.minmax), "regressor(s)"), inactive = !has.xreg)
     set("select", lags)
     if (!is.null(fit$MSEH)) set("hidden", paste("hd =", fit$hd, "of", nrow(fit$MSEH), "tried"))
-    set("train", paste0(fit$backend %||% "neuralnet", ": hd = ", shorten(fit$hd), ", ", reps, " members"))
+    set("train", paste0(fit$backend %||% "neuralnet", ": ",
+                        if (is.function(fit$hd)) "custom layers" else paste("hd =", shorten(fit$hd)),
+                        ", ", reps, " members"))
     set("random", if (!is.fast) paste0("hd = ", shorten(fit$hd), ", ", reps, " members"), inactive = is.fast)
     set("hiddenact", inactive = is.fast)
     set("fast", if (is.fast) paste0("hd = ", min(fit$hd), "-", max(fit$hd), ", ", reps, " members"),
@@ -299,7 +301,12 @@ print.nnfor_map <- function(x, ...) {
 #' boxes are conditional steps; grey boxes were not used by the annotated fit.
 #'
 #' The map is drawn in the current plotting region and respects graphical
-#' parameters set by the user. It is best viewed on a wide device.
+#' parameters set by the user. Text is sized to the plotting area: one size
+#' for all boxes, the largest at which every box fits, with descriptions
+#' re-wrapped to the box width. Set \code{cex} to fix the size instead. The
+#' map is best viewed on a wide device; in RStudio the plot pane can be
+#' small, so saving the map to a file, as in the examples, gives a better
+#' view.
 #'
 #' @param x Object of class \code{nnfor_map}.
 #' @param col.stages Colours for the stages (recycled).
@@ -308,69 +315,137 @@ print.nnfor_map <- function(x, ...) {
 #' @param col.inactive Colour of steps not used by an annotated fit.
 #' @param col.arrows Colour of the arrows. Defaults to \code{par("fg")}.
 #' @param legend Logical, add a legend.
+#' @param cex Size of the text in the boxes. \code{NULL} (default) chooses the
+#'   largest size at which the text of every box fits, up to \code{cex.max}.
+#' @param cex.max Largest text size used when \code{cex = NULL}.
 #' @param ... Arguments passed to \code{\link[graphics]{plot}} when creating the frame, overriding the defaults (e.g. \code{main}, \code{cex.main}).
 #'
 #' @return Invisibly returns \code{x}.
 #' @seealso \code{\link{nnfor_map}}.
 #' @examples
 #' plot(nnfor_map("mlp"), main = "")
+#' \dontrun{
+#'  # Save full-screen maps as images, outside the RStudio plot pane
+#'  png("nnfor_map_mlp.png", width = 1920, height = 1080, res = 120)
+#'  plot(nnfor_map("mlp"))
+#'  dev.off()
+#'
+#'  # A map annotated with a fitted network
+#'  fit <- mlp(AirPassengers)
+#'  png("nnfor_map_fit.png", width = 1920, height = 1080, res = 120)
+#'  plot(nnfor_map(fit))
+#'  dev.off()
+#'
+#'  # Or as a PDF, which can be zoomed without losing quality
+#'  pdf("nnfor_map_forecast.pdf", width = 16, height = 9)
+#'  plot(nnfor_map(fit, stage = "forecast"))
+#'  dev.off()
+#' }
 #' @export
 #' @method plot nnfor_map
 plot.nnfor_map <- function(x, col.stages = c("#0072B2", "#009E73", "#E69F00", "#D55E00",
                                              "#CC79A7", "#56B4E9", "#882255"),
                            col.text = par("fg"), col.value = "#0072B2", col.inactive = "grey60",
-                           col.arrows = par("fg"), legend = TRUE, ...) {
+                           col.arrows = par("fg"), legend = TRUE, cex = NULL, cex.max = 1.2, ...) {
   nd <- x$nodes
   n.col <- max(nd$col)
   n.row <- max(nd$row)
-  bw <- 0.8   # box width (column spacing is 1)
-  bh <- 0.66  # box height (row spacing is 1)
+  bw <- 0.8    # box width (column spacing is 1)
+  bh <- 0.82   # box height (row spacing is 1); the gaps still carry the arrows
+  pad <- 0.04  # inner margin of a box, in plot units
+  spacing <- 1.65  # strheight() covers capitals only, not descenders or leading
 
   do.call(plot, merge_args(list(x = NA, y = NA, xlim = c(0.5, n.col + 0.5),
                                 ylim = c(n.row + if (legend) 0.75 else 0.5, -0.45),
                                 xlab = "", ylab = "", axes = FALSE, main = x$title),
                            list(...)))
 
-  stage.col <- rep_len(col.stages, n.col)
+  # Wrap text to a width (in plot units) at a given size. Text breaks between
+  # words; function names (code = TRUE) break after an underscore or before
+  # " / ", onto at most two lines so they stay recognisable. Returns NULL if
+  # the text cannot fit.
+  wrap <- function(txt, width, cex, font, code = FALSE) {
+    tokens <- if (code) {
+      strsplit(txt, "(?<=[[:alnum:]]_)|(?= / )", perl = TRUE)[[1]]
+    } else {
+      strsplit(txt, " ", fixed = TRUE)[[1]]
+    }
+    sep <- if (code) "" else " "
+    out <- character(0)
+    cur <- ""
+    for (w in tokens) {
+      cand <- if (nzchar(cur)) paste0(cur, sep, w) else w
+      if (!nzchar(cur) || strwidth(cand, cex = cex, font = font) <= width) {
+        cur <- cand
+      } else {
+        out <- c(out, cur)
+        cur <- trimws(w)
+      }
+    }
+    out <- trimws(c(out, cur))
+    if (code && length(out) > 2) return(NULL)
+    out
+  }
 
-  # Stage headers and group brackets
-  text(seq_len(n.col), 0.12, x$stages, col = stage.col, font = 2, cex = 0.85)
+  # Lines of box i at size `cex`: list(text, font, role); NULL if a function
+  # name cannot fit.
+  layout_box <- function(i, cex) {
+    n <- nd[i, ]
+    detail <- if (!is.na(n$value)) n$value else n$out
+    parts <- list(list(n$label, 2, "main", TRUE),
+                  list(n$desc, 1, "main", FALSE),
+                  if (nzchar(detail)) list(paste("->", detail), 3,
+                                           if (!is.na(n$value)) "value" else "main", FALSE),
+                  if (!is.na(n$cond)) list(n$cond, 3, "cond", FALSE))
+    out <- list()
+    for (p in parts[!vapply(parts, is.null, logical(1))]) {
+      txt <- wrap(p[[1]], bw - 2 * pad, cex, p[[2]], code = p[[4]])
+      if (is.null(txt)) return(NULL)
+      for (t in txt) out[[length(out) + 1]] <- list(t, p[[2]], p[[3]])
+    }
+    out
+  }
+  box_fits <- function(l, cex) {
+    if (is.null(l)) return(FALSE)
+    w <- max(vapply(l, function(z) strwidth(z[[1]], cex = cex, font = z[[2]]), numeric(1)))
+    w <= bw - 2 * pad && length(l) * abs(strheight("Mg", cex = cex)) * spacing <= bh - 2 * pad
+  }
+  # Largest size at which box i fits
+  box_cex <- function(i, upper) {
+    cx <- upper
+    while (cx > 0.3 && !box_fits(layout_box(i, cx), cx)) cx <- cx * 0.97
+    cx
+  }
+
+  # One size for all boxes, for a consistent look: the size of the box that
+  # needs the smallest text to fit.
+  if (is.null(cex)) {
+    cex <- min(vapply(seq_len(nrow(nd)), box_cex, numeric(1), upper = cex.max))
+  }
+  boxes <- lapply(seq_len(nrow(nd)), function(i) {
+    layout_box(i, cex) %||% list(list(nd$label[i], 2, "main"))
+  })
+
+  # Stage headers and group brackets, sized with the box text
+  hcex <- min(1.1, max(0.75, cex))
+  stage.col <- rep_len(col.stages, n.col)
+  text(seq_len(n.col), 0.12, x$stages, col = stage.col, font = 2, cex = hcex)
   for (g in x$groups) {
     gx <- range(g$cols) + c(-0.45, 0.45)
     lines(gx[c(1, 1, 2, 2)], c(0, -0.22, -0.22, 0), col = col.text)
-    text(mean(gx), -0.32, g$label, col = col.text, font = 3, cex = 0.85)
+    text(mean(gx), -0.32, g$label, col = col.text, font = 3, cex = hcex)
   }
-
-  # Box text: name, description, output (or fitted value), condition
-  box.lines <- lapply(seq_len(nrow(nd)), function(i) {
-    n <- nd[i, ]
-    l <- list(list(n$label, 2, "main"))
-    for (d in strwrap(n$desc, 34)) l[[length(l) + 1]] <- list(d, 1, "main")
-    detail <- if (!is.na(n$value)) n$value else n$out
-    if (nzchar(detail)) l[[length(l) + 1]] <- list(paste("->", detail), 3,
-                                                   if (!is.na(n$value)) "value" else "main")
-    if (!is.na(n$cond)) l[[length(l) + 1]] <- list(n$cond, 3, "cond")
-    l
-  })
-  # One text size for all boxes, the largest that fits every box
-  need <- vapply(box.lines, function(l) {
-    w <- max(vapply(l, function(z) strwidth(z[[1]], font = z[[2]]), numeric(1)))
-    h <- (length(l) + 0.6) * abs(strheight("Mg")) * 1.45
-    min(bw * 0.94 / w, bh * 0.94 / h)
-  }, numeric(1))
-  cex <- min(1, need)
 
   # Arrows first, so boxes sit on top
   draw_map_edges(x$edges, nd, bw, bh, col.arrows)
-
+  lh <- abs(strheight("Mg", cex = cex)) * spacing
   for (i in seq_len(nrow(nd))) {
     n <- nd[i, ]
     sc <- if (n$inactive) col.inactive else stage.col[n$col]
     fill <- if (n$inactive) NA else grDevices::adjustcolor(sc, alpha.f = 0.15)
     rect(n$col - bw / 2, n$row - bh / 2, n$col + bw / 2, n$row + bh / 2, col = fill,
          border = sc, lty = if (is.na(n$cond)) 1 else 2, lwd = 1.2)
-    l <- box.lines[[i]]
-    lh <- abs(strheight("Mg", cex = cex)) * 1.45
+    l <- boxes[[i]]
     y0 <- n$row - (length(l) - 1) * lh / 2
     for (k in seq_along(l)) {
       tc <- if (n$inactive) col.inactive else switch(l[[k]][[3]], main = col.text,
@@ -378,15 +453,14 @@ plot.nnfor_map <- function(x, col.stages = c("#0072B2", "#009E73", "#E69F00", "#
       text(n$col, y0 + (k - 1) * lh, l[[k]][[1]], font = l[[k]][[2]], cex = cex, col = tc)
     }
   }
-
   if (legend) {
-    graphics::legend(mean(c(0.5, n.col + 0.5)), n.row + 0.55, xjust = 0.5, horiz = TRUE, bty = "n",
-                     legend = c("data", "stored settings", "repeated", "conditional step",
-                                if (any(nd$inactive)) "not used by this fit"),
-                     lty = c(1, 3, 2, NA, if (any(nd$inactive)) NA),
-                     pch = c(NA, NA, NA, 0, if (any(nd$inactive)) 0),
-                     col = c(rep(col.arrows, 3), col.text, if (any(nd$inactive)) col.inactive),
-                     text.col = col.text, cex = 0.8)
+    legend(mean(c(0.5, n.col + 0.5)), n.row + 0.55, xjust = 0.5, horiz = TRUE, bty = "n",
+           legend = c("data", "stored settings", "repeated", "conditional step",
+                      if (any(nd$inactive)) "not used by this fit"),
+           lty = c(1, 3, 2, NA, if (any(nd$inactive)) NA),
+           pch = c(NA, NA, NA, 0, if (any(nd$inactive)) 0),
+           col = c(rep(col.arrows, 3), col.text, if (any(nd$inactive)) col.inactive),
+           text.col = col.text, cex = min(1, max(0.7, 0.85 * cex)))
   }
   invisible(x)
 }

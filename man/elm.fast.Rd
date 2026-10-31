@@ -46,20 +46,20 @@ An object of class "\code{elm.fast}".
   The function \code{plot} produces a plot the network fit (see \code{\link{plot.elm.fast}}).
   An object of class \code{"elm.fast"} is a list containing the following elements:
 \itemize{
-\item{\code{hd}{ - Number of hidden nodes. This is a vector with a different number for each training repetition.}}
-\item{\code{W.in}{ - Input weights for each training repetition.}}
-\item{\code{W}{ - Output layer weights for each repetition.}}
-\item{\code{b}{ - Output node bias for each training repetition.}}
-\item{\code{W.dct}{ - Direct connection weights argument if direct == TRUE for each training repetition. Otherwise NULL.}}
-\item{\code{fitted.all}{ - Fitted values for each training repetition.}}
-\item{\code{fitted}{ - Ensemble fitted values.}}
-\item{\code{y}{ - Target variable.}}
-\item{\code{type}{ - Estimation used for output layer weights.}}
-\item{\code{comb}{ - Combination operator used.}}
-\item{\code{direct}{ - Presence of direct input-output connections.}}
-\item{\code{minmax}{ - If scaling is used this contains the scaling information for the target variable.}}
-\item{\code{minmax.x}{ - If scaling is used this contains the scaling information for the input variables.}}
-\item{\code{MSE}{ - In-sample Mean Squared Error.}}
+\item \code{hd}: Number of hidden nodes. This is a vector with a different number for each training repetition.
+\item \code{W.in}: Input weights for each training repetition.
+\item \code{W}: Output layer weights for each repetition.
+\item \code{b}: Output node bias for each training repetition.
+\item \code{W.dct}: Direct connection weights argument if direct == TRUE for each training repetition. Otherwise NULL.
+\item \code{fitted.all}: Fitted values for each training repetition.
+\item \code{fitted}: Ensemble fitted values.
+\item \code{y}: Target variable.
+\item \code{type}: Estimation used for output layer weights.
+\item \code{comb}: Combination operator used.
+\item \code{direct}: Presence of direct input-output connections.
+\item \code{minmax}: If scaling is used this contains the scaling information for the target variable.
+\item \code{minmax.x}: If scaling is used this contains the scaling information for the input variables.
+\item \code{MSE}: In-sample Mean Squared Error.
 }
 }
 \description{
@@ -91,8 +91,8 @@ This implementation of ELM is more appropriate when the number of inputs is seve
 }
 \references{
 \itemize{
-\item{For combination operators see: Kourentzes N., Barrow B.K., Crone S.F. (2014) \href{https://kourentzes.com/forecasting/2014/04/19/neural-network-ensemble-operators-for-time-series-forecasting/}{Neural network ensemble operators for time series forecasting}. \emph{Expert Systems with Applications}, \bold{41}(\bold{9}), 4235-4244.}
-\item{For ELMs see: Huang G.B., Zhou H., Ding X. (2006) Extreme learning machine: theory and applications. \emph{Neurocomputing}, \bold{70}(\bold{1}), 489-501.}
+\item For combination operators see: Kourentzes N., Barrow B.K., Crone S.F. (2014) \href{https://kourentzes.com/forecasting/2014/04/19/neural-network-ensemble-operators-for-time-series-forecasting/}{Neural network ensemble operators for time series forecasting}. \emph{Expert Systems with Applications}, \bold{41}(\bold{9}), 4235-4244.
+\item For ELMs see: Huang G.B., Zhou H., Ding X. (2006) Extreme learning machine: theory and applications. \emph{Neurocomputing}, \bold{70}(\bold{1}), 489-501.
 }
 }
 \seealso{

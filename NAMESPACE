@@ -6,6 +6,7 @@ S3method(plot,elm)
 S3method(plot,elm.fast)
 S3method(plot,forecast.net)
 S3method(plot,mlp)
+S3method(plot,nnfor_comparison)
 S3method(plot,nnfor_map)
 S3method(predict,elm)
 S3method(predict,elm.fast)
@@ -13,7 +14,9 @@ S3method(predict,mlp)
 S3method(print,elm)
 S3method(print,elm.fast)
 S3method(print,mlp)
+S3method(print,nnfor_comparison)
 S3method(print,nnfor_map)
+export(compare_backends)
 export(elm)
 export(elm.fast)
 export(elm.thief)
@@ -26,8 +29,10 @@ export(plot_network)
 importFrom(forecast,nsdiffs)
 importFrom(generics,forecast)
 importFrom(graphics,
+  abline,
   arrows,
   axis,
+  legend,
   lines,
   par,
   plot,

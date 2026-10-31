@@ -22,12 +22,12 @@ An object of classes "\code{forecast.net}" and "\code{forecast}".
   The function \code{plot} produces a plot of the forecasts.
   An object of class \code{"forecast.net"} is a list containing the following elements:
 \itemize{
-\item{\code{method}{ - The name of the forecasting method as a character string}}
-\item{\code{mean}{ - Point forecasts as a time series}}
-\item{\code{all.mean}{ - An array h x reps of all ensemble members forecasts, where reps are the number of ensemble members.}}
-\item{\code{x}{ - The original time series used to create the network.}}
-\item{\code{fitted}{ - Fitted values.}}
-\item{\code{residuals}{ - Residuals from the fitted network.}}
+\item \code{method}: The name of the forecasting method as a character string
+\item \code{mean}: Point forecasts as a time series
+\item \code{all.mean}: An array h x reps of all ensemble members forecasts, where reps are the number of ensemble members.
+\item \code{x}: The original time series used to create the network.
+\item \code{fitted}: Fitted values.
+\item \code{residuals}: Residuals from the fitted network.
 }
 }
 \description{

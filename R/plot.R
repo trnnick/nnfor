@@ -153,6 +153,10 @@ plot_network <- function(x, r = 1, col.neuron = "lightgrey", col.xreg = "lightbl
     stop("Model must be the output of either mlp or elm functions.", call. = FALSE)
   }
   lay <- network_layout(x, r)
+  if (is.null(lay$sizes)) {
+    return(plot_custom_network(x, lay, col.neuron, col.xreg, col.season, col.connection,
+                               col.border, arrow.length, axis.args, ...))
+  }
   sizes <- lay$sizes
   layer.n <- length(sizes) - 1                 # weight layers (hidden + output)
   xx <- c(0, seq(0.1, 0.9, length.out = layer.n + 1), 1)
@@ -223,6 +227,47 @@ plot_network <- function(x, r = 1, col.neuron = "lightgrey", col.xreg = "lightbl
                              axis.args))
   }
 
+  invisible(x)
+}
+
+# Inputs -> custom hidden block (printed) -> output, for torch architectures
+# given as a function.
+plot_custom_network <- function(x, lay, col.neuron, col.xreg, col.season, col.connection,
+                                col.border, arrow.length, axis.args, ...) {
+  n <- length(lay$names)
+  do.call(plot, merge_args(list(x = NA, y = NA, xlim = c(0, 1), ylim = c(0, 1), xlab = "", ylab = "",
+                                xaxt = "n", yaxt = "n", bty = "n", main = lay$title),
+                           list(...)))
+  yy <- seq(0, 1, length.out = n + 2)[-c(1, n + 2)]
+  rd <- min(max(0.015, 1 / ((n + 2) * 1.75)), 0.06)
+  cols <- rep(col.neuron, n)
+  cols[grepl("^Xreg\\.", lay$names)] <- col.xreg
+  cols[grepl("^D[0-9]+\\.", lay$names)] <- col.season
+  for (i in seq_len(n)) {
+    lines(c(0.1 + rd, 0.3), c(yy[i], 0.5), col = col.connection)
+    arrows(0, yy[i], 0.1 - rd, length = arrow.length, col = col.connection)
+    plotrix::draw.circle(0.1, yy[i], rd, col = cols[i], border = col.border)
+  }
+  rect(0.3, 0.2, 0.75, 0.8, col = col.neuron, border = col.border)
+  # torch prints modules with cli, which uses Unicode rules and bullets when
+  # the session supports them; devices such as pdf() cannot draw those. Ask
+  # cli for ASCII and replace anything that is still not ASCII.
+  old <- options(cli.unicode = FALSE)
+  txt <- utils::capture.output(print(torch_member_module(x$net$builder, x$net$n.inputs)[[1]]))
+  options(old)
+  txt <- gsub("[^ -~]", "?", enc2utf8(txt), perl = TRUE)
+  txt <- txt[nzchar(trimws(txt))]
+  if (length(txt) > 12) txt <- c(txt[1:11], "...")
+  txt <- ifelse(nchar(txt) > 44, paste0(substr(txt, 1, 42), "..."), txt)
+  text(0.31, 0.78, paste(txt, collapse = "\n"), adj = c(0, 1), cex = 0.6, family = "mono")
+  lines(c(0.75, 0.9 - rd), c(0.5, 0.5), col = col.connection)
+  plotrix::draw.circle(0.9, 0.5, rd, col = col.neuron, border = col.border)
+  arrows(0.9 + rd, 0.5, 1, length = arrow.length, col = col.connection)
+  if (!is.null(axis.args)) {
+    do.call(axis, merge_args(list(side = 1, at = c(0.1, 0.525, 0.9), col = NA,
+                                  labels = c(paste0("Inputs\n(", n, ")"), "Custom hidden\nlayers", "Output")),
+                             axis.args))
+  }
   invisible(x)
 }
 

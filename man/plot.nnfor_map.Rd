@@ -16,6 +16,8 @@
   col.inactive = "grey60",
   col.arrows = par("fg"),
   legend = TRUE,
+  cex = NULL,
+  cex.max = 1.2,
   ...
 )
 }
@@ -35,6 +37,11 @@
 \item{col.arrows}{Colour of the arrows. Defaults to \code{par("fg")}.}
 
 \item{legend}{Logical, add a legend.}
+
+\item{cex}{Size of the text in the boxes. \code{NULL} (default) chooses the
+largest size at which the text of every box fits, up to \code{cex.max}.}
+
+\item{cex.max}{Largest text size used when \code{cex = NULL}.}
 }
 \value{
 Invisibly returns \code{x}.
@@ -48,10 +55,32 @@ boxes are conditional steps; grey boxes were not used by the annotated fit.
 }
 \details{
 The map is drawn in the current plotting region and respects graphical
-parameters set by the user. It is best viewed on a wide device.
+parameters set by the user. Text is sized to the plotting area: one size
+for all boxes, the largest at which every box fits, with descriptions
+re-wrapped to the box width. Set \code{cex} to fix the size instead. The
+map is best viewed on a wide device; in RStudio the plot pane can be
+small, so saving the map to a file, as in the examples, gives a better
+view.
 }
 \examples{
 plot(nnfor_map("mlp"), main = "")
+\dontrun{
+ # Save full-screen maps as images, outside the RStudio plot pane
+ png("nnfor_map_mlp.png", width = 1920, height = 1080, res = 120)
+ plot(nnfor_map("mlp"))
+ dev.off()
+
+ # A map annotated with a fitted network
+ fit <- mlp(AirPassengers)
+ png("nnfor_map_fit.png", width = 1920, height = 1080, res = 120)
+ plot(nnfor_map(fit))
+ dev.off()
+
+ # Or as a PDF, which can be zoomed without losing quality
+ pdf("nnfor_map_forecast.pdf", width = 16, height = 9)
+ plot(nnfor_map(fit, stage = "forecast"))
+ dev.off()
+}
 }
 \seealso{
 \code{\link{nnfor_map}}.

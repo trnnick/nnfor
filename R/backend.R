@@ -26,6 +26,7 @@
 nn_backend <- function(name = "neuralnet") {
   switch(name,
          neuralnet = backend_neuralnet(),
+         torch = backend_torch(),
          stop("Unknown network backend: ", name, call. = FALSE))
 }
 

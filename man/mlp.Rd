@@ -22,6 +22,7 @@ mlp(
   xreg.keep = NULL,
   hd.auto.type = c("set", "valid", "cv", "elm"),
   hd.max = NULL,
+  backend = c("neuralnet", "torch"),
   model = NULL,
   retrain = FALSE,
   ...
@@ -32,7 +33,7 @@ mlp(
 
 \item{m}{Seasonal period(s) of the series. Use a vector for multiple seasonalities, e.g. \code{c(7, 365.25)}. If NULL (default) they are taken from \code{y}: its frequency for a ts object, or all seasonal periods for an msts object. When given, \code{m} overrides the periods of \code{y} for lag specification, seasonality and differencing tests and seasonal dummies.}
 
-\item{hd}{Number of hidden nodes. This can be a vector, where each number represents the number of hidden nodes of a different hidden layer.}
+\item{hd}{Number of hidden nodes. This can be a vector, where each number represents the number of hidden nodes of a different hidden layer. With \code{backend = "torch"} it can also be a function defining a custom architecture, see Details.}
 
 \item{reps}{Number of networks to train, the result is the ensemble forecast.}
 
@@ -62,39 +63,155 @@ mlp(
 
 \item{hd.max}{When hd.auto.type is set to either "valid" or "cv" then this argument can be used to set the maximum number of hidden nodes to evaluate, otherwise the maximum is set automatically.}
 
+\item{backend}{Library used to train the networks: "neuralnet" (default) or "torch", which needs the \href{https://cran.r-project.org/package=torch}{torch} package. See Details.}
+
 \item{model}{A previously trained mlp object. If this is provided then the same model is fitted to y, without re-estimating any model parameters.}
 
 \item{retrain}{If a previous model is provided, retrain the network or not.}
 
-\item{...}{Additional inputs for neuralnet function.}
+\item{...}{Settings for training, passed to the backend: arguments of \code{\link[neuralnet]{neuralnet}} for \code{backend = "neuralnet"}, or the torch settings listed in Details. They are also used when searching for the number of hidden nodes.}
 }
 \value{
 Return object of class \code{mlp}.
   The function \code{plot} produces a plot the network architecture or of the fit (see \code{\link{plot.mlp}}).
   \code{mlp} contains:
 \itemize{
-\item{\code{net}{ - MLP networks.}}
-\item{\code{hd}{ - Number of hidden nodes.}}
-\item{\code{lags}{ - Input lags used.}}
-\item{\code{xreg.lags}{ - \code{xreg} lags used.}}
-\item{\code{difforder}{ - Differencing used.}}
-\item{\code{sdummy}{ - Use of deterministic seasonality.}}
-\item{\code{ff}{ - Seasonal periods modelled (\code{m}, or those of \code{y}).}}
-\item{\code{ff.det}{ - Seasonal frequencies coded using deterministic dummies.}}
-\item{\code{det.type}{ - Type of determistic seasonality.}}
-\item{\code{y}{ - Input time series.}}
-\item{\code{minmax}{ - Scaling structure.}}
-\item{\code{xreg.minmax}{ - Scaling structure for xreg variables.}}
-\item{\code{comb}{ - Combination operator used.}}
-\item{\code{fitted}{ - Fitted values.}}
-\item{\code{MSE}{ - In-sample Mean Squared Error.}}
-\item{\code{MSEH}{ - If \code{hd.auto.type} is set to either "valid" or "cv" an array of the MSE error for each network size is provided. Otherwise this is NULL.}}
-\item{\code{fitted.all}{ - Fitted values of each ensemble member.}}
-\item{\code{backend}{ - Name of the library used to train the networks.}}
+\item \code{net}: MLP networks.
+\item \code{hd}: Number of hidden nodes.
+\item \code{lags}: Input lags used.
+\item \code{xreg.lags}: \code{xreg} lags used.
+\item \code{difforder}: Differencing used.
+\item \code{sdummy}: Use of deterministic seasonality.
+\item \code{ff}: Seasonal periods modelled (\code{m}, or those of \code{y}).
+\item \code{ff.det}: Seasonal frequencies coded using deterministic dummies.
+\item \code{det.type}: Type of determistic seasonality.
+\item \code{y}: Input time series.
+\item \code{minmax}: Scaling structure.
+\item \code{xreg.minmax}: Scaling structure for xreg variables.
+\item \code{comb}: Combination operator used.
+\item \code{fitted}: Fitted values.
+\item \code{MSE}: In-sample Mean Squared Error.
+\item \code{MSEH}: If \code{hd.auto.type} is set to either "valid" or "cv" an array of the MSE error for each network size is provided. Otherwise this is NULL.
+\item \code{fitted.all}: Fitted values of each ensemble member.
+\item \code{backend}: Name of the library used to train the networks: "neuralnet" or "torch".
 }
 }
 \description{
 This function fits MLP neural networks for time series forecasting.
+}
+\details{
+\subsection{Training backends}{
+Networks are trained with \code{\link[neuralnet]{neuralnet}} by default.
+With \code{backend = "torch"} they are trained with
+\href{https://torch.mlverse.org}{torch}, which supports modern activation
+functions and optimizers and custom architectures. torch is optional: install
+it with \code{install.packages("torch")} followed by \code{torch::install_torch()}.
+Use \code{\link{compare_backends}} to compare them on a series, and
+\code{\link{nnfor_map}} to see where training sits in the modelling steps.
+}
+
+\subsection{torch settings}{
+The torch backend accepts neuralnet's argument names, and by default trains
+as neuralnet does: logistic hidden layers, linear output, full-batch Rprop on
+the sum of squared errors, stopping when the largest absolute gradient falls
+below \code{threshold} or after \code{stepmax} steps. Settings, passed in \code{...}:
+\describe{
+\item{\code{act.fct}}{Hidden layer activation: \code{"logistic"} (default, also
+  \code{"sigmoid"}), \code{"tanh"}, \code{"relu"}, \code{"leaky_relu"},
+  \code{"elu"}, \code{"selu"}, \code{"gelu"}, \code{"silu"} (also
+  \code{"swish"}), \code{"mish"}, \code{"softplus"}, or a function of a torch tensor.}
+\item{\code{algorithm}}{Optimizer: \code{"rprop"} (default; neuralnet's
+  \code{"rprop+"} and \code{"rprop-"} are accepted), \code{"adam"},
+  \code{"adamw"}, \code{"sgd"} (also \code{"backprop"}), \code{"rmsprop"} or
+  \code{"adagrad"}. L-BFGS is not offered: it couples the ensemble members,
+  which are trained together.}
+\item{\code{learningrate}}{Learning rate. Defaults: 0.1 as the initial step
+  of Rprop (as neuralnet), 0.001 for Adam and AdamW, 0.01 otherwise.}
+\item{\code{threshold}, \code{stepmax}}{Stopping rule, as in neuralnet
+  (defaults 0.01 and 1e5).}
+\item{\code{learningrate.limit}, \code{learningrate.factor}}{Rprop step
+  limits and factors, as in neuralnet (defaults \code{list(min = 1e-10, max = 0.1)}
+  and \code{list(minus = 0.5, plus = 1.2)}).}
+}
+Popular choices for shallow networks: \code{"tanh"} is a smooth, zero-centred
+replacement for the logistic function; \code{"silu"} and \code{"gelu"} are
+smooth alternatives to \code{"relu"}, which with few hidden nodes can leave
+nodes inactive; Adam with a learning rate between 0.001 and 0.01 is the usual
+default optimizer, and Rprop remains a good choice for full-batch training of
+small networks.
+}
+
+\subsection{Suggested torch settings}{
+The defaults reproduce neuralnet's setup, and the function defaults are kept
+for both backends. For torch we suggest
+\code{act.fct = "gelu", algorithm = "adam", learningrate = 0.01, stepmax = 3000}.
+On eight standard series (AirPassengers, co2, nottem, USAccDeaths, UKgas,
+ldeaths, Nile, lynx; last season or 10 years held out, 10 networks per
+ensemble), this was the most consistent of the settings tried: its
+out-of-sample MSE was on average 6\% below neuralnet's, lower on five
+series and at most 45\% higher on the others, for a similar run time.
+\code{"relu"} and \code{"silu"} were less reliable, failing badly on some
+series, and Rprop with \code{"tanh"} was slow to converge. Results vary
+from series to series: \code{\link{compare_backends}} runs this kind of
+comparison on your data. The default torch setup (neuralnet's settings)
+was the fastest overall.
+}
+
+\subsection{Custom architectures}{
+With \code{backend = "torch"}, \code{hd} can be a function that receives the
+number of inputs and returns the hidden layers as a torch module. nnfor
+builds the inputs, adds a linear output layer, trains the ensemble and
+produces forecasts. The number of hidden nodes is then not searched, so
+\code{hd.auto.type} is ignored, and \code{act.fct} is not used: activations
+are part of the module. For example, two hidden layers with dropout:
+\preformatted{
+arch <- function(n_inputs) {
+  torch::nn_sequential(
+    torch::nn_linear(n_inputs, 16), torch::nn_silu(), torch::nn_dropout(0.1),
+    torch::nn_linear(16, 8), torch::nn_silu())
+}
+fit <- mlp(AirPassengers, hd = arch, backend = "torch", algorithm = "adam",
+           learningrate = 0.01, stepmax = 3000)
+}
+or a module of your own, here with a skip connection:
+\preformatted{
+skip_block <- torch::nn_module(
+  initialize = function(n_inputs, width = 8) {
+    self$hidden <- torch::nn_linear(n_inputs, width)
+    self$skip <- torch::nn_linear(n_inputs, width)
+  },
+  forward = function(x) torch::torch_tanh(self$hidden(x)) + self$skip(x))
+fit <- mlp(AirPassengers, hd = function(n) skip_block(n), backend = "torch",
+           algorithm = "adam", learningrate = 0.01, stepmax = 2000)
+}
+Ensemble members of custom architectures share one optimizer and one
+backward pass, but run separate forward passes, so they are slower to
+train than standard networks.
+}
+
+\subsection{Differences between the backends}{
+\itemize{
+\item The two backends do not produce the same networks: torch computes in
+  single precision (float32), and its Rprop does not use neuralnet's weight
+  backtracking.
+\item neuralnet discards ensemble members that do not converge within
+  \code{stepmax}. torch keeps them, since with optimizers such as Adam the
+  gradient may never fall below \code{threshold}; the number that converged
+  is shown by \code{print}.
+\item Ensemble members of standard networks are trained simultaneously as
+  one batch of tensors, which gives the same result as training them one
+  by one. Training time therefore grows little with \code{reps}, while
+  neuralnet's grows in proportion; \code{options(nnfor.cores)} is not used
+  by torch.
+\item Results are reproducible with \code{set.seed()}: starting weights are
+  drawn from R's random number generator, as neuralnet draws them, and
+  torch's own generator is seeded from it.
+\item Networks trained with torch need torch to forecast, also when loaded
+  from a saved file.
+\item Training runs on the CPU. GPUs offer little for networks of this size;
+  support may be added in a later version.
+}
+}
 }
 \note{
 To use mlp with Temporal Hierarchies (\href{https://cran.r-project.org/package=thief}{thief} package) see \code{\link{mlp.thief}}.
@@ -123,13 +240,32 @@ for any number of cores and reproducible with \code{set.seed()}.
  frc <- forecast(fit,h=36)
  plot(frc)
 }
+\donttest{
+if (requireNamespace("torch", quietly = TRUE) && torch::torch_is_installed()) {
+  # torch, with neuralnet's settings
+  fit <- mlp(AirPassengers, reps = 5, backend = "torch")
+  print(fit)
+  # torch, with the suggested settings
+  fit <- mlp(AirPassengers, reps = 5, backend = "torch", act.fct = "gelu",
+             algorithm = "adam", learningrate = 0.01, stepmax = 3000)
+  plot(forecast(fit, h = 24))
+  # A custom architecture
+  arch <- function(n_inputs) {
+    torch::nn_sequential(torch::nn_linear(n_inputs, 16), torch::nn_silu(),
+                         torch::nn_linear(16, 8), torch::nn_silu())
+  }
+  fit <- mlp(AirPassengers, reps = 5, hd = arch, backend = "torch",
+             algorithm = "adam", learningrate = 0.01, stepmax = 1000)
+  plot(fit)
+}
+}
 
 }
 \references{
 \itemize{
-\item{For an introduction to neural networks see: Ord K., Fildes R., Kourentzes N. (2017) \href{https://kourentzes.com/forecasting/2017/10/16/new-forecasting-book-principles-of-business-forecasting-2e/}{Principles of Business Forecasting 2e}. \emph{Wessex Press Publishing Co.}, Chapter 10.}
-\item{For combination operators see: Kourentzes N., Barrow B.K., Crone S.F. (2014) \href{https://kourentzes.com/forecasting/2014/04/19/neural-network-ensemble-operators-for-time-series-forecasting/}{Neural network ensemble operators for time series forecasting}. \emph{Expert Systems with Applications}, \bold{41}(\bold{9}), 4235-4244.}
-\item{For variable selection see: Crone S.F., Kourentzes N. (2010) \href{https://kourentzes.com/forecasting/2010/04/19/feature-selection-for-time-series-prediction-a-combined-filter-and-wrapper-approach-for-neural-networks/}{Feature selection for time series prediction – A combined filter and wrapper approach for neural networks}. \emph{Neurocomputing}, \bold{73}(\bold{10}), 1923-1936.}
+\item For an introduction to neural networks see: Ord K., Fildes R., Kourentzes N. (2017) \href{https://kourentzes.com/forecasting/2017/10/16/new-forecasting-book-principles-of-business-forecasting-2e/}{Principles of Business Forecasting 2e}. \emph{Wessex Press Publishing Co.}, Chapter 10.
+\item For combination operators see: Kourentzes N., Barrow B.K., Crone S.F. (2014) \href{https://kourentzes.com/forecasting/2014/04/19/neural-network-ensemble-operators-for-time-series-forecasting/}{Neural network ensemble operators for time series forecasting}. \emph{Expert Systems with Applications}, \bold{41}(\bold{9}), 4235-4244.
+\item For variable selection see: Crone S.F., Kourentzes N. (2010) \href{https://kourentzes.com/forecasting/2010/04/19/feature-selection-for-time-series-prediction-a-combined-filter-and-wrapper-approach-for-neural-networks/}{Feature selection for time series prediction -- A combined filter and wrapper approach for neural networks}. \emph{Neurocomputing}, \bold{73}(\bold{10}), 1923-1936.
 }
 }
 \seealso{
