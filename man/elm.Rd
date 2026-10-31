@@ -6,7 +6,7 @@
 \usage{
 elm(
   y,
-  m = frequency(y),
+  m = NULL,
   hd = NULL,
   type = c("lasso", "ridge", "step", "lm"),
   reps = 20,
@@ -14,27 +14,27 @@ elm(
   lags = NULL,
   keep = NULL,
   difforder = NULL,
-  outplot = c(FALSE, TRUE),
-  sel.lag = c(TRUE, FALSE),
-  direct = c(FALSE, TRUE),
-  allow.det.season = c(TRUE, FALSE),
+  outplot = FALSE,
+  sel.lag = TRUE,
+  direct = FALSE,
+  allow.det.season = TRUE,
   det.type = c("auto", "bin", "trg"),
   xreg = NULL,
   xreg.lags = NULL,
   xreg.keep = NULL,
-  barebone = c(FALSE, TRUE),
+  barebone = FALSE,
   model = NULL,
-  retrain = c(FALSE, TRUE)
+  retrain = FALSE
 )
 }
 \arguments{
 \item{y}{Input time series. Can be ts or msts object.}
 
-\item{m}{Frequency of the time series. By default it is picked up from y.}
+\item{m}{Seasonal period(s) of the series. Use a vector for multiple seasonalities, e.g. \code{c(7, 365.25)}. If NULL (default) they are taken from \code{y}: its frequency for a ts object, or all seasonal periods for an msts object. When given, \code{m} overrides the periods of \code{y} for lag specification, seasonality and differencing tests and seasonal dummies.}
 
 \item{hd}{Number of hidden nodes. This can be a vector, where each number represents the number of hidden nodes of a different hidden layer. Use NULL to automatically specify.}
 
-\item{type}{Estimation type for output layer weights. Can be "lasso" (lasso with CV), "ridge" (ridge regression with CV), "step" (stepwise regression with AIC) or "lm" (linear regression).}
+\item{type}{Estimation type for output layer weights. Can be "lasso" (lasso with CV), "ridge" (ridge regression with CV), "step" (stepwise regression with AIC) or "lm" (linear regression; "ls" is accepted as a synonym).}
 
 \item{reps}{Number of networks to train, the result is the ensemble forecast.}
 
@@ -46,7 +46,7 @@ elm(
 
 \item{difforder}{Vector including the differencing lags. For example c(1,12) will apply first and seasonal (12) differences. For no differencing use 0. For automatic selection use NULL.}
 
-\item{outplot}{Provide plot of model fit. Can be TRUE or FALSE.}
+\item{outplot}{Provide plot of model fit. Can be TRUE or FALSE. For a customised plot use \code{plot(fit, which = "fit", ...)} after fitting.}
 
 \item{sel.lag}{Automatically select lags. Can be TRUE or FALSE.}
 
@@ -62,15 +62,15 @@ elm(
 
 \item{xreg.keep}{List of logical vectors to force lags of xreg to stay in the model if sel.lag == TRUE. If NULL then all exogenous lags can be removed.}
 
-\item{barebone}{Use an alternative elm implementation (written in R) that is faster when the number of inputs is very high. Typically not needed.}
+\item{barebone}{Use an alternative elm implementation (written in R) that is faster when the number of inputs is very high. Typically not needed. Supports a single hidden layer only.}
 
-\item{model}{A previously trained mlp object. If this is provided then the same model is fitted to y, without re-estimating any model parameters.}
+\item{model}{A previously trained elm object. If this is provided then the same model is fitted to y, without re-estimating any model parameters.}
 
 \item{retrain}{If a previous model is provided, retrain the network or not. If the network is retrained the size of the hidden layer is reset.}
 }
 \value{
 Return object of class \code{elm}. If barebone == TRUE then the object inherits a second class "\code{elm.fast}".
-  The function \code{plot} produces a plot the network architecture.
+  The function \code{plot} produces a plot the network architecture or of the fit (see \code{\link{plot.elm}}).
   \code{elm} contains:
 \itemize{
 \item{\code{net}{ - ELM networks. If it is of class "\code{elm.fast}" then this is NULL.}}
@@ -83,7 +83,7 @@ Return object of class \code{elm}. If barebone == TRUE then the object inherits 
 \item{\code{xreg.lags}{ - \code{xreg} lags used.}}
 \item{\code{difforder}{ - Differencing used.}}
 \item{\code{sdummy}{ - Use of deterministic seasonality.}}
-\item{\code{ff}{ - Seasonal frequencies detected in data (taken from ts or msts object).}}
+\item{\code{ff}{ - Seasonal periods modelled (\code{m}, or those of \code{y}).}}
 \item{\code{ff.det}{ - Seasonal frequencies coded using deterministic dummies.}}
 \item{\code{det.type}{ - Type of determistic seasonality.}}
 \item{\code{y}{ - Input time series.}}
@@ -94,6 +94,7 @@ Return object of class \code{elm}. If barebone == TRUE then the object inherits 
 \item{\code{direct}{ - Presence of direct input-output connections.}}
 \item{\code{fitted}{ - Fitted values.}}
 \item{\code{MSE}{ - In-sample Mean Squared Error.}}
+\item{\code{fitted.all}{ - Fitted values of each ensemble member.}}
 }
 }
 \description{
@@ -101,8 +102,18 @@ This function fits ELM neural networks for time series forecasting.
 }
 \note{
 To use elm with Temporal Hierarchies (\href{https://cran.r-project.org/package=thief}{thief} package) see \code{\link{elm.thief}}.
-  The elm function by default calls the \code{neuralnet} function. If barebone == TRUE then it uses an alternative implementation (\code{TStools:::elm.fast}) which is more appropriate when the number of inputs is several hundreds.
+  The elm function by default calls the \code{neuralnet} function. If barebone == TRUE then it uses an alternative implementation (\code{\link{elm.fast}}) which is more appropriate when the number of inputs is several hundreds.
 }
+\section{Parallel training}{
+
+Ensemble members can be trained in parallel with
+\code{options(nnfor.cores = 4)} (forked workers on Linux and macOS) or
+\code{options(nnfor.cores = cl)} with a cluster from
+\code{parallel::makeCluster()}, which is recommended on Windows. All random
+numbers are drawn before members are dispatched, so results are identical
+for any number of cores and reproducible with \code{set.seed()}.
+}
+
 \examples{
 \dontshow{
  fit <- elm(AirPassengers,reps=1)

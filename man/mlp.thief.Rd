@@ -30,7 +30,7 @@ An object of classes "\code{forecast.net}" and "\code{forecast}".
 Function for MLP forecasting with Temporal Hierarchies.
 }
 \note{
-This function is created to work with Temporal Hierarchied (\href{https://cran.r-project.org/package=thief}{thief} package). For conventional MLP networks use \code{\link{mlp}}.
+This function is created to work with Temporal Hierarchies (\href{https://cran.r-project.org/package=thief}{thief} package). For conventional MLP networks use \code{\link{mlp}}.
 }
 \examples{
 \dontrun{

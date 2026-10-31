@@ -6,16 +6,16 @@
 \usage{
 mlp(
   y,
-  m = frequency(y),
+  m = NULL,
   hd = NULL,
   reps = 20,
   comb = c("median", "mean", "mode"),
   lags = NULL,
   keep = NULL,
   difforder = NULL,
-  outplot = c(FALSE, TRUE),
-  sel.lag = c(TRUE, FALSE),
-  allow.det.season = c(TRUE, FALSE),
+  outplot = FALSE,
+  sel.lag = TRUE,
+  allow.det.season = TRUE,
   det.type = c("auto", "bin", "trg"),
   xreg = NULL,
   xreg.lags = NULL,
@@ -23,14 +23,14 @@ mlp(
   hd.auto.type = c("set", "valid", "cv", "elm"),
   hd.max = NULL,
   model = NULL,
-  retrain = c(FALSE, TRUE),
+  retrain = FALSE,
   ...
 )
 }
 \arguments{
 \item{y}{Input time series. Can be ts or msts object.}
 
-\item{m}{Frequency of the time series. By default it is picked up from y.}
+\item{m}{Seasonal period(s) of the series. Use a vector for multiple seasonalities, e.g. \code{c(7, 365.25)}. If NULL (default) they are taken from \code{y}: its frequency for a ts object, or all seasonal periods for an msts object. When given, \code{m} overrides the periods of \code{y} for lag specification, seasonality and differencing tests and seasonal dummies.}
 
 \item{hd}{Number of hidden nodes. This can be a vector, where each number represents the number of hidden nodes of a different hidden layer.}
 
@@ -44,7 +44,7 @@ mlp(
 
 \item{difforder}{Vector including the differencing lags. For example c(1,12) will apply first and seasonal (12) differences. For no differencing use 0. For automatic selection use NULL.}
 
-\item{outplot}{Provide plot of model fit. Can be TRUE or FALSE.}
+\item{outplot}{Provide plot of model fit. Can be TRUE or FALSE. For a customised plot use \code{plot(fit, which = "fit", ...)} after fitting.}
 
 \item{sel.lag}{Automatically select lags. Can be TRUE or FALSE.}
 
@@ -70,7 +70,7 @@ mlp(
 }
 \value{
 Return object of class \code{mlp}.
-  The function \code{plot} produces a plot the network architecture.
+  The function \code{plot} produces a plot the network architecture or of the fit (see \code{\link{plot.mlp}}).
   \code{mlp} contains:
 \itemize{
 \item{\code{net}{ - MLP networks.}}
@@ -79,7 +79,7 @@ Return object of class \code{mlp}.
 \item{\code{xreg.lags}{ - \code{xreg} lags used.}}
 \item{\code{difforder}{ - Differencing used.}}
 \item{\code{sdummy}{ - Use of deterministic seasonality.}}
-\item{\code{ff}{ - Seasonal frequencies detected in data (taken from ts or msts object).}}
+\item{\code{ff}{ - Seasonal periods modelled (\code{m}, or those of \code{y}).}}
 \item{\code{ff.det}{ - Seasonal frequencies coded using deterministic dummies.}}
 \item{\code{det.type}{ - Type of determistic seasonality.}}
 \item{\code{y}{ - Input time series.}}
@@ -89,6 +89,8 @@ Return object of class \code{mlp}.
 \item{\code{fitted}{ - Fitted values.}}
 \item{\code{MSE}{ - In-sample Mean Squared Error.}}
 \item{\code{MSEH}{ - If \code{hd.auto.type} is set to either "valid" or "cv" an array of the MSE error for each network size is provided. Otherwise this is NULL.}}
+\item{\code{fitted.all}{ - Fitted values of each ensemble member.}}
+\item{\code{backend}{ - Name of the library used to train the networks.}}
 }
 }
 \description{
@@ -97,6 +99,16 @@ This function fits MLP neural networks for time series forecasting.
 \note{
 To use mlp with Temporal Hierarchies (\href{https://cran.r-project.org/package=thief}{thief} package) see \code{\link{mlp.thief}}.
 }
+\section{Parallel training}{
+
+Ensemble members can be trained in parallel with
+\code{options(nnfor.cores = 4)} (forked workers on Linux and macOS) or
+\code{options(nnfor.cores = cl)} with a cluster from
+\code{parallel::makeCluster()}, which is recommended on Windows. All random
+numbers are drawn before members are dispatched, so results are identical
+for any number of cores and reproducible with \code{set.seed()}.
+}
+
 \examples{
 \dontshow{
  fit <- mlp(AirPassengers,reps=1)
@@ -107,6 +119,7 @@ To use mlp with Temporal Hierarchies (\href{https://cran.r-project.org/package=t
  fit <- mlp(AirPassengers)
  print(fit)
  plot(fit)
+ plot(fit, which = "fit")
  frc <- forecast(fit,h=36)
  plot(frc)
 }

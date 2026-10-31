@@ -24,7 +24,7 @@
 #'   \item{For forecasting with temporal hierarchies see: Athanasopoulos G., Hyndman R.J., Kourentzes N., Petropoulos F. (2017) \href{https://kourentzes.com/forecasting/2017/02/27/forecasting-with-temporal-hierarchies-3/}{Forecasting with Temporal Hierarchies}. \emph{European Journal of Operational research}, \bold{262}(\bold{1}), 60-74.}
 #'   \item{For combination operators see: Kourentzes N., Barrow B.K., Crone S.F. (2014) \href{https://kourentzes.com/forecasting/2014/04/19/neural-network-ensemble-operators-for-time-series-forecasting/}{Neural network ensemble operators for time series forecasting}. \emph{Expert Systems with Applications}, \bold{41}(\bold{9}), 4235-4244.}
 #' }
-#' @note This function is created to work with Temporal Hierarchied (\href{https://cran.r-project.org/package=thief}{thief} package). For conventional MLP networks use \code{\link{mlp}}.
+#' @note This function is created to work with Temporal Hierarchies (\href{https://cran.r-project.org/package=thief}{thief} package). For conventional MLP networks use \code{\link{mlp}}.
 #' @examples
 #' \dontrun{
 #'   library(thief)
@@ -35,39 +35,8 @@
 #' @keywords mlp thief ts
 #' @export mlp.thief
 
-mlp.thief <- function(y,h=NULL,...){
-  # This is a wrapper function to use MLP with THieF
-
-  # Remove level input from ellipsis
-  ellipsis.args <- list(...)
-  ellipsis.args$level <- NULL
-  ellipsis.args$y <- y
-
-  # Fit network
-  fit <- do.call(mlp,ellipsis.args)
-
-  # Default h
-  if (is.null(h)){
-    h <- frequency(y)
-  }
-  # Check if xreg was given and pass to forecast
-  if ("xreg" %in% names(ellipsis.args)){
-    xreg <- ellipsis.args$xreg
-  } else {
-    xreg <- NULL
-  }
-
-  # Forecast
-  out <- forecast(fit,h,xreg)
-  # Make fitted values span the complete sample
-  n <- length(out$x)
-  m <- length(out$fitted)
-  if (m < n){
-    out$fitted <- ts(c(rep(NA,n-m),out$fitted),frequency=frequency(out$fitted),end=end(out$fitted))
-  }
-
-  return(out)
-
+mlp.thief <- function(y, h = NULL, ...) {
+  net_thief(mlp, y, h, ...)
 }
 
 #' @title ELM network for THieF.
@@ -81,7 +50,7 @@ mlp.thief <- function(y,h=NULL,...){
 #'
 #' @author Nikolaos Kourentzes, \email{nikolaos@kourentzes.com}
 #' @seealso \code{\link{elm}}, \code{\link{mlp.thief}}.
-#' @note This function is created to work with Temporal Hierarchied (\href{https://cran.r-project.org/package=thief}{thief} package). For conventional ELM networks use \code{\link{elm}}.
+#' @note This function is created to work with Temporal Hierarchies (\href{https://cran.r-project.org/package=thief}{thief} package). For conventional ELM networks use \code{\link{elm}}.
 #' @examples
 #' \dontrun{
 #'   library(thief)
@@ -92,39 +61,24 @@ mlp.thief <- function(y,h=NULL,...){
 #' @keywords elm thief ts
 #' @export elm.thief
 #'
-elm.thief <- function(y,h=NULL,...){
-  # This is a wrapper function to use MLP with THieF
+elm.thief <- function(y, h = NULL, ...) {
+  net_thief(elm, y, h, ...)
+}
 
-  # Remove level input from ellipsis
-  ellipsis.args <- list(...)
-  ellipsis.args$level <- NULL
-  ellipsis.args$y <- y
+# Fit a network and forecast in the form expected by thief::thief().
+net_thief <- function(fit_fun, y, h = NULL, ...) {
+  args <- list(...)
+  args$level <- NULL  # passed by thief, not used by the networks
+  args$y <- y
+  fit <- do.call(fit_fun, args)
 
-  # Fit network
-  fit <- do.call(elm,ellipsis.args)
-
-  # Default h
-  if (is.null(h)){
-    h <- frequency(y)
-  }
-  # Check if xreg was given and pass to forecast
-  if ("xreg" %in% names(ellipsis.args)){
-    xreg <- ellipsis.args$xreg
-  } else {
-    xreg <- NULL
-  }
-
-  # Forecast
-  out <- forecast(fit,h,xreg)
+  out <- forecast(fit, h = h %||% frequency(y), xreg = args[["xreg"]])
   # Make fitted values span the complete sample
   n <- length(out$x)
   m <- length(out$fitted)
-  if (m < n){
-    out$fitted <- ts(c(rep(NA,n-m),out$fitted),frequency=frequency(out$fitted),end=end(out$fitted))
+  if (m < n) {
+    out$fitted <- ts(c(rep(NA, n - m), out$fitted), frequency = frequency(out$fitted),
+                     end = end(out$fitted))
   }
-
-  return(out)
-
+  out
 }
-
-

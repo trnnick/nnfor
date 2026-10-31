@@ -2,57 +2,67 @@
 
 S3method(forecast,elm)
 S3method(forecast,mlp)
-S3method(forecast,net)
 S3method(plot,elm)
 S3method(plot,elm.fast)
 S3method(plot,forecast.net)
 S3method(plot,mlp)
+S3method(plot,nnfor_map)
 S3method(predict,elm)
 S3method(predict,elm.fast)
 S3method(predict,mlp)
 S3method(print,elm)
 S3method(print,elm.fast)
 S3method(print,mlp)
+S3method(print,nnfor_map)
 export(elm)
 export(elm.fast)
 export(elm.thief)
 export(linscale)
 export(mlp)
 export(mlp.thief)
+export(nnfor_map)
+export(plot_fit)
+export(plot_network)
 importFrom(forecast,nsdiffs)
 importFrom(generics,forecast)
-importFrom(grDevices,rainbow)
-importFrom(graphics,arrows)
-importFrom(graphics,axis)
-importFrom(graphics,hist)
-importFrom(graphics,lines)
-importFrom(graphics,plot)
-importFrom(graphics,points)
-importFrom(graphics,text)
-importFrom(methods,is)
-importFrom(stats,alias)
-importFrom(stats,as.formula)
-importFrom(stats,coef)
-importFrom(stats,cor.test)
-importFrom(stats,deltat)
-importFrom(stats,density)
-importFrom(stats,end)
-importFrom(stats,fft)
-importFrom(stats,frequency)
-importFrom(stats,friedman.test)
-importFrom(stats,lm)
-importFrom(stats,median)
-importFrom(stats,predict)
-importFrom(stats,runif)
-importFrom(stats,start)
-importFrom(stats,time)
-importFrom(stats,ts)
-importFrom(stats,ts.plot)
-importFrom(stats,uniroot)
-importFrom(tsutils,cmav)
-importFrom(tsutils,lagmatrix)
-importFrom(tsutils,mseastest)
-importFrom(tsutils,seasdummy)
+importFrom(graphics,
+  arrows,
+  axis,
+  lines,
+  par,
+  plot,
+  points,
+  rect,
+  strheight,
+  strwidth,
+  text
+)
+importFrom(stats,
+  alias,
+  as.formula,
+  coef,
+  deltat,
+  density,
+  end,
+  frequency,
+  friedman.test,
+  lm,
+  median,
+  predict,
+  runif,
+  setNames,
+  start,
+  time,
+  ts
+)
+importFrom(tsutils,
+  cmav,
+  lagmatrix,
+  mseastest,
+  seasdummy
+)
 importFrom(uroot,ch.test)
-importFrom(utils,head)
-importFrom(utils,tail)
+importFrom(utils,
+  head,
+  tail
+)

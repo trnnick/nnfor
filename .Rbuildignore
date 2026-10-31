@@ -4,3 +4,4 @@
 ^\.gitignore$
 ^\sync.ffs_db$
 ^hex-nnfor.png$
+^dev$

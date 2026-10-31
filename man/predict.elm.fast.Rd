@@ -4,7 +4,7 @@
 \alias{predict.elm.fast}
 \title{Predictions for ELM (fast) network.}
 \usage{
-\method{predict}{elm.fast}(object, newx, na.rm = c(FALSE, TRUE), ...)
+\method{predict}{elm.fast}(object, newx, na.rm = FALSE, ...)
 }
 \arguments{
 \item{object}{ELM network object, produced using \code{\link{elm.fast}}.}

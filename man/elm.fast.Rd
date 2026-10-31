@@ -11,11 +11,11 @@ elm.fast(
   type = c("lasso", "ridge", "step", "ls"),
   reps = 20,
   comb = c("median", "mean", "mode"),
-  direct = c(FALSE, TRUE),
-  linscale = c(TRUE, FALSE),
+  direct = FALSE,
+  linscale = TRUE,
   output = c("linear", "logistic"),
-  core = c("FALSE", "TRUE"),
-  ortho = c(FALSE, TRUE)
+  core = FALSE,
+  ortho = FALSE
 )
 }
 \arguments{
@@ -25,7 +25,7 @@ elm.fast(
 
 \item{hd}{Starting number of hidden nodes (scalar). Use NULL to automatically specify.}
 
-\item{type}{Estimation type for output layer weights. Can be "lasso" (lasso with CV), "ridge" (ridge regression with CV), "step" (stepwise regression with AIC) or "lm" (linear regression).}
+\item{type}{Estimation type for output layer weights. Can be "lasso" (lasso with CV), "ridge" (ridge regression with CV), "step" (stepwise regression with AIC) or "ls" (linear regression; "lm" is accepted as a synonym).}
 
 \item{reps}{Number of networks to train.}
 
@@ -35,7 +35,7 @@ elm.fast(
 
 \item{linscale}{Scale inputs linearly between -0.8 to 0.8. If output == "logistic" then scaling is between 0 and 1.}
 
-\item{output}{Type of output layer. It can be "linear" or "logistic". If "logistic" then type must be set to "lasso".}
+\item{output}{Type of output layer. It can be "linear" or "logistic". If "logistic" then type must be set to "lasso". Logistic outputs are probabilities from the inverse logit of the output layer and, if \code{linscale = TRUE}, back to the range of \code{y}.}
 
 \item{core}{If TRUE skips calculation of final fitted values and MSE. Called internally by \code{"elm"} function.}
 
@@ -43,14 +43,14 @@ elm.fast(
 }
 \value{
 An object of class "\code{elm.fast}".
-  The function \code{plot} produces a plot the network fit.
+  The function \code{plot} produces a plot the network fit (see \code{\link{plot.elm.fast}}).
   An object of class \code{"elm.fast"} is a list containing the following elements:
 \itemize{
 \item{\code{hd}{ - Number of hidden nodes. This is a vector with a different number for each training repetition.}}
 \item{\code{W.in}{ - Input weights for each training repetition.}}
 \item{\code{W}{ - Output layer weights for each repetition.}}
 \item{\code{b}{ - Output node bias for each training repetition.}}
-\item{\code{W.dct}{ - Direct connection weights argument if direct == TRUE for each training repetition. Otherwuse NULL.}}
+\item{\code{W.dct}{ - Direct connection weights argument if direct == TRUE for each training repetition. Otherwise NULL.}}
 \item{\code{fitted.all}{ - Fitted values for each training repetition.}}
 \item{\code{fitted}{ - Ensemble fitted values.}}
 \item{\code{y}{ - Target variable.}}

@@ -13,7 +13,7 @@ seasoncheck <- function(y,m=NULL,alpha=0.05,decomposition=c("multiplicative","ad
 
   # Get m (seasonality)
   if (is.null(m)){
-    if (any(class(y) == "ts")){
+    if (inherits(y, "ts")){
       m <- frequency(y)
     } else {
       stop("Seasonality not defined (y not ts object).")
@@ -21,7 +21,7 @@ seasoncheck <- function(y,m=NULL,alpha=0.05,decomposition=c("multiplicative","ad
   }
 
   # Get starting period of season
-  if (any(class(y) == "ts")){
+  if (inherits(y, "ts")){
     s <- start(y)
     s <- s[2]
     # Temporal aggregation can mess-up s, so override if needed
@@ -55,7 +55,6 @@ seasoncheck <- function(y,m=NULL,alpha=0.05,decomposition=c("multiplicative","ad
   }
 
   # Reshape series in seasonal matrix
-  k <- m - (n %% m)
   ks <- s-1
   ke <- m - ((n+ks) %% m)
   ynt <- c(rep(NA,times=ks),as.vector(ynt),rep(NA,times=ke))
@@ -76,6 +75,7 @@ seasoncheck <- function(y,m=NULL,alpha=0.05,decomposition=c("multiplicative","ad
 
 }
 
+# TRUE if a trended exponential smoothing model is preferred by AIC.
 trendcheck <- function(y){
   forecast::ets(y,model="ANN")$aic > forecast::ets(y,model="AAN")$aic
 }
