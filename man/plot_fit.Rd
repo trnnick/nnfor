@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot_fit}
 \alias{plot_fit}
-\title{Plot the in-sample fit of a network.}
+\title{Plot the in-sample fit of a network}
 \usage{
 plot_fit(
   object,
@@ -42,6 +42,16 @@ Members are only available for models fitted with nnfor 0.9.9 or later.
 \dontshow{
  fit <- mlp(AirPassengers, reps = 2)
  plot_fit(fit, main = "Fit", fitted.args = list(col = "red", lwd = 2))
+}
+\dontrun{
+fit <- mlp(AirPassengers, reps = 5)
+# Style of the network fits (members) and of the ensemble fit
+plot_fit(fit, members.args = list(col = "pink"), fitted.args = list(col = "red", lwd = 2))
+# Zoom in with arguments for plot(), e.g. xlim
+plot_fit(fit, xlim = c(1958, 1961))
+# Add the fit to a plot of your own
+plot(AirPassengers, col = "grey40", main = "Air passengers")
+plot_fit(fit, add = TRUE, members = FALSE)
 }
 }
 \seealso{

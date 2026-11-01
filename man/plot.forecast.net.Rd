@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot.forecast.net}
 \alias{plot.forecast.net}
-\title{Plot forecasts of a network.}
+\title{Plot forecasts of a network}
 \usage{
 \method{plot}{forecast.net}(
   x,
@@ -44,6 +44,16 @@ each ensemble member and the in-sample fit.
  fit <- mlp(AirPassengers, reps = 2)
  frc <- forecast(fit, h = 12)
  plot(frc, members = FALSE, main = "", mean.args = list(col = "red"))
+}
+\dontrun{
+fit <- mlp(AirPassengers, reps = 5)
+frc <- forecast(fit, h = 24)
+plot(frc)                                # forecasts of the ensemble and of each network
+plot(frc, members = FALSE, fitted = TRUE)  # ensemble only, with the in-sample fit
+plot(frc, xlim = c(1958, 1963), mean.args = list(col = "red"))  # zoom, custom style
+# Add the forecasts to a plot of your own
+plot(AirPassengers, xlim = c(1949, 1963), ylim = c(100, 750))
+plot(frc, add = TRUE, members = FALSE)
 }
 }
 \seealso{

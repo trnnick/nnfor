@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot.elm.fast}
 \alias{plot.elm.fast}
-\title{Plot ELM (fast) fit.}
+\title{Plot ELM (fast) fit}
 \usage{
 \method{plot}{elm.fast}(
   x,
@@ -31,6 +31,15 @@ Invisibly returns \code{x}.
 }
 \description{
 Scatter plot of actual against fitted values of an \code{\link{elm.fast}} network.
+}
+\examples{
+\dontrun{
+x <- matrix(rnorm(300), 100, 3)
+y <- x \%*\% c(1, -1, 0.5) + rnorm(100, sd = 0.3)
+fit <- elm.fast(y, x, reps = 5)
+plot(fit)                                     # fitted against actual values
+plot(fit, members = FALSE, line.args = NULL)  # ensemble only, no reference line
+}
 }
 \seealso{
 \code{\link{elm.fast}}.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/net.thief.R
 \name{elm.thief}
 \alias{elm.thief}
-\title{ELM network for THieF.}
+\title{ELM network for THieF}
 \usage{
 elm.thief(y, h = NULL, ...)
 }

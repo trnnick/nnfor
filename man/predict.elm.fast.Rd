@@ -2,7 +2,7 @@
 % Please edit documentation in R/elm.fast.R
 \name{predict.elm.fast}
 \alias{predict.elm.fast}
-\title{Predictions for ELM (fast) network.}
+\title{Predictions for ELM (fast) network}
 \usage{
 \method{predict}{elm.fast}(object, newx, na.rm = FALSE, ...)
 }

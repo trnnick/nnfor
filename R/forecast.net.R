@@ -1,6 +1,5 @@
-
 #' @rdname forecast.elm
-#' @title Forecast using ELM neural network.
+#' @title Forecast using ELM neural network
 #' @description Create forecasts using ELM neural networks.
 #'
 #' @param object ELM network object, produced using \code{\link{elm}}.
@@ -38,6 +37,15 @@
 #'  frc <- forecast(fit,h=36)
 #'  plot(frc)
 #' }
+#' \dontrun{
+#' # Networks with regressors (xreg) need their values over the forecast horizon
+#' set.seed(1)
+#' z <- cbind(promo = rbinom(156, 1, 0.2))
+#' y <- AirPassengers + 30 * z[1:144, "promo"]
+#' fit <- elm(y, xreg = z, xreg.lags = list(0))
+#' frc <- forecast(fit, h = 12, xreg = z)
+#' plot(frc)
+#' }
 #'
 #' @export
 forecast.elm <- function(object, h = NULL, y = NULL, xreg = NULL, ...) {
@@ -51,7 +59,7 @@ predict.elm <- function(object, ...) {
 }
 
 #' @rdname forecast.mlp
-#' @title Forecast using MLP neural network.
+#' @title Forecast using MLP neural network
 #' @description  Create forecasts using MLP neural networks.
 #'
 #' @param object MLP network object, produced using \code{\link{mlp}}.
@@ -77,6 +85,15 @@ predict.elm <- function(object, ...) {
 #'  plot(fit)
 #'  frc <- forecast(fit,h=36)
 #'  plot(frc)
+#' }
+#' \dontrun{
+#' # Networks with regressors (xreg) need their values over the forecast horizon
+#' set.seed(1)
+#' z <- cbind(promo = rbinom(156, 1, 0.2))
+#' y <- AirPassengers + 30 * z[1:144, "promo"]
+#' fit <- mlp(y, xreg = z, xreg.lags = list(0))
+#' frc <- forecast(fit, h = 12, xreg = z)
+#' plot(frc)
 #' }
 #'
 #' @export

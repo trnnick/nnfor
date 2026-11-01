@@ -1,4 +1,4 @@
-#' Apply minmax linear scaling to a vector.
+#' Apply minmax linear scaling to a vector
 #'
 #' Apply minmax linear scaling to a vector.
 #'

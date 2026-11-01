@@ -193,6 +193,77 @@
 #'  frc <- forecast(fit,h=36)
 #'  plot(frc)
 #' }
+#' \dontrun{
+#' # Data for the examples with exogenous regressors (xreg): a promotion
+#' # indicator and a slowly moving price. xreg must cover the sample and the
+#' # forecast horizon.
+#' set.seed(1)
+#' h <- 12
+#' n <- length(AirPassengers)
+#' z <- cbind(promo = rbinom(n + h, 1, 0.2),
+#'            price = 50 + cumsum(rnorm(n + h)))
+#' y <- AirPassengers + 30 * z[1:n, "promo"] - 2 * z[1:n, "price"]
+#'
+#' # Regressors with automatic lags: each starts from the same candidate lags
+#' # as y (here 1 to 12, so not lag 0, the current value of the regressor) and
+#' # lag selection keeps the useful ones
+#' fit <- mlp(y, xreg = z)
+#' print(fit)
+#' # Forecasting needs the future values of the regressors
+#' frc <- forecast(fit, h = h, xreg = z)
+#'
+#' # Lags for each regressor, one vector per column of xreg: promo at time t
+#' # only (lag 0), price at lags 0 to 2
+#' fit <- mlp(y, xreg = z, xreg.lags = list(0, 0:2))
+#'
+#' # Keep some regressor lags in the network whatever the lag selection says:
+#' # promo at lag 0, price at lag 0 (lags 1 and 2 may still be removed)
+#' fit <- mlp(y, xreg = z, xreg.lags = list(0, 0:2),
+#'            xreg.keep = list(TRUE, c(TRUE, FALSE, FALSE)))
+#'
+#' # Use exactly the lags given, without lag selection
+#' fit <- mlp(y, xreg = z, xreg.lags = list(0, 0:2), sel.lag = FALSE)
+#'
+#' # Regressors as the only inputs: no lags of y (lags = 0)
+#' fit <- mlp(y, xreg = z, lags = 0, xreg.lags = list(0, 0:2), sel.lag = FALSE)
+#'
+#' # A single regressor: drop = FALSE keeps xreg a matrix
+#' fit <- mlp(y, xreg = z[, "promo", drop = FALSE], xreg.lags = list(0))
+#'
+#' # Lags of y: lags 1 to 12, with lags 1 and 12 always kept
+#' fit <- mlp(AirPassengers, lags = 1:12, keep = c(TRUE, rep(FALSE, 10), TRUE))
+#'
+#' # Number of hidden nodes (hd)
+#' fit <- mlp(AirPassengers, hd = 10)          # one hidden layer of 10 nodes
+#' fit <- mlp(AirPassengers, hd = c(8, 4))     # two hidden layers, of 8 and 4 nodes
+#' fit <- mlp(AirPassengers, hd.auto.type = "valid", hd.max = 6)  # chosen on a 20% validation sample
+#' fit$MSEH                                    # validation error for each number of nodes
+#' fit <- mlp(AirPassengers, hd.auto.type = "cv", hd.max = 4, reps = 5)  # 5-fold cross-validation (slow)
+#' fit <- mlp(AirPassengers, hd.auto.type = "elm")  # estimated with an ELM (experimental)
+#' # With backend = "torch", hd can also define a custom architecture: see the
+#' # torch examples below and Details.
+#'
+#' # Save a fitted network and use it later
+#' fit <- mlp(AirPassengers)
+#' file <- file.path(tempdir(), "mlp_fit.rds")
+#' saveRDS(fit, file)
+#' fit <- readRDS(file)
+#' frc <- forecast(fit, h = 12)
+#'
+#' # Apply a network to new data without re-estimating it: a network fitted up
+#' # to 1958 is used on the full series
+#' fit.old <- mlp(window(AirPassengers, end = c(1958, 12)))
+#' fit.new <- mlp(AirPassengers, model = fit.old)
+#' # ...or keep its specification (lags, differencing, dummies, hidden nodes)
+#' # and retrain the weights on the new data
+#' fit.new <- mlp(AirPassengers, model = fit.old, retrain = TRUE)
+#' frc <- forecast(fit.new, h = 12)
+#'
+#' # A reused network with regressors needs the regressors of the new data
+#' fit.old <- mlp(window(y, end = c(1958, 12)), xreg = z, xreg.lags = list(0, 0:2))
+#' fit.new <- mlp(y, model = fit.old, xreg = z)
+#' frc <- forecast(fit.new, h = h, xreg = z)
+#' }
 #' \donttest{
 #' if (requireNamespace("torch", quietly = TRUE) && torch::torch_is_installed()) {
 #'   # torch, with neuralnet's settings

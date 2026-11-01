@@ -84,6 +84,72 @@
 #'  frc <- forecast(fit,h=36)
 #'  plot(frc)
 #' }
+#' \dontrun{
+#' # Data for the examples with exogenous regressors (xreg): a promotion
+#' # indicator and a slowly moving price. xreg must cover the sample and the
+#' # forecast horizon.
+#' set.seed(1)
+#' h <- 12
+#' n <- length(AirPassengers)
+#' z <- cbind(promo = rbinom(n + h, 1, 0.2),
+#'            price = 50 + cumsum(rnorm(n + h)))
+#' y <- AirPassengers + 30 * z[1:n, "promo"] - 2 * z[1:n, "price"]
+#'
+#' # Regressors with automatic lags: each starts from the same candidate lags
+#' # as y (here 1 to 12, so not lag 0, the current value of the regressor) and
+#' # lag selection keeps the useful ones
+#' fit <- elm(y, xreg = z)
+#' print(fit)
+#' # Forecasting needs the future values of the regressors
+#' frc <- forecast(fit, h = h, xreg = z)
+#'
+#' # Lags for each regressor, one vector per column of xreg, and lags kept
+#' # whatever the lag selection says: promo at lag 0, price at lag 0
+#' fit <- elm(y, xreg = z, xreg.lags = list(0, 0:2),
+#'            xreg.keep = list(TRUE, c(TRUE, FALSE, FALSE)))
+#'
+#' # Use exactly the lags given, without lag selection
+#' fit <- elm(y, xreg = z, xreg.lags = list(0, 1:3), sel.lag = FALSE)
+#'
+#' # Regressors as the only inputs: no lags of y (lags = 0)
+#' fit <- elm(y, xreg = z, lags = 0, xreg.lags = list(0, 0:2), sel.lag = FALSE)
+#'
+#' # Number of hidden nodes (hd); by default it depends on the sample size
+#' fit <- elm(AirPassengers, hd = 50)          # one hidden layer of 50 nodes
+#' fit <- elm(AirPassengers, hd = c(30, 10))   # two random hidden layers
+#' plot(fit)  # hidden nodes that the output layer does not use are dashed
+#'
+#' # Estimation of the output weights: "lasso" (default), "ridge", "step"
+#' # (stepwise regression) or "lm"
+#' fit <- elm(AirPassengers, type = "ridge")
+#' fit <- elm(AirPassengers, type = "step")
+#'
+#' # Direct connections from the inputs to the output, besides the hidden layer
+#' fit <- elm(AirPassengers, direct = TRUE)
+#'
+#' # The fast implementation, for many inputs; also returns an elm object
+#' fit <- elm(AirPassengers, barebone = TRUE)
+#'
+#' # Save a fitted network and use it later
+#' fit <- elm(AirPassengers)
+#' file <- file.path(tempdir(), "elm_fit.rds")
+#' saveRDS(fit, file)
+#' fit <- readRDS(file)
+#' frc <- forecast(fit, h = 12)
+#'
+#' # Apply a network to new data without re-estimating it: a network fitted up
+#' # to 1958 is used on the full series
+#' fit.old <- elm(window(AirPassengers, end = c(1958, 12)))
+#' fit.new <- elm(AirPassengers, model = fit.old)
+#' # ...or keep its specification and re-estimate on the new data (the number
+#' # of hidden nodes is chosen again)
+#' fit.new <- elm(AirPassengers, model = fit.old, retrain = TRUE)
+#'
+#' # A reused network with regressors needs the regressors of the new data
+#' fit.old <- elm(window(y, end = c(1958, 12)), xreg = z, xreg.lags = list(0, 0:2))
+#' fit.new <- elm(y, model = fit.old, xreg = z)
+#' frc <- forecast(fit.new, h = h, xreg = z)
+#' }
 #'
 #' @export elm
 
@@ -229,7 +295,7 @@ elm_split_weights <- function(w, hd, direct, x.names) {
 elm_predict_member <- function(members, x, r) {
   if (members$fast) {
     elm_fast_raw(x, members$W.in[[r]], members$W[[r]], members$b[r],
-                              members$W.dct[[r]], members$direct)
+                 members$W.dct[[r]], members$direct)
   } else {
     H <- elm_hidden(members$net, x, r, tail(members$hd, 1))
     H %*% members$W[[r]] + members$b[r] + if (members$direct) x %*% members$W.dct[[r]] else 0

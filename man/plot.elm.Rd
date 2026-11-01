@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot.elm}
 \alias{plot.elm}
-\title{Plot ELM network.}
+\title{Plot ELM network}
 \usage{
 \method{plot}{elm}(x, r = 1, which = c("network", "fit"), ...)
 }
@@ -30,12 +30,10 @@ Neurons are coloured with \code{"lightgrey"}. Seasonal dummies are coloured with
  plot(fit)
 }
 \dontrun{
- fit <- elm(AirPassengers)
- print(fit)
- plot(fit)
- plot(fit, which = "fit")
- frc <- forecast(fit,h=36)
- plot(frc)
+fit <- elm(AirPassengers, reps = 5, direct = TRUE)
+plot(fit)              # unused hidden nodes are dashed, direct connections blue
+plot(fit, r = 2)       # architecture of the second network
+plot(fit, which = "fit")  # in-sample fit
 }
 
 }

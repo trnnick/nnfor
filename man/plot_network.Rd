@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot_network}
 \alias{plot_network}
-\title{Plot the architecture of a network.}
+\title{Plot the architecture of a network}
 \usage{
 plot_network(
   x,
@@ -57,6 +57,17 @@ or graphical parameters already set by the user.
 \dontshow{
  fit <- mlp(AirPassengers, reps = 1)
  plot_network(fit, main = "", col.neuron = "white")
+}
+\dontrun{
+fit <- mlp(AirPassengers, reps = 1)
+# Colours of the inputs: lags of y, regressors (xreg) and seasonal dummies
+plot_network(fit, col.neuron = "white", col.xreg = "skyblue", col.season = "orange")
+# Without the layer labels, and with a title of your own
+plot_network(fit, axis.args = NULL, main = "")
+# Graphical parameters set with par() are respected, e.g. a dark theme
+op <- par(bg = "grey15", fg = "white", col.main = "white", col.axis = "white")
+plot_network(fit)
+par(op)
 }
 }
 \seealso{

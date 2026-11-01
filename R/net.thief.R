@@ -1,4 +1,4 @@
-#' @title MLP network for THieF.
+#' @title MLP network for THieF
 #' @description Function for MLP forecasting with Temporal Hierarchies.
 #'
 #' @param y Input time series. Can be ts or msts object.
@@ -39,7 +39,7 @@ mlp.thief <- function(y, h = NULL, ...) {
   net_thief(mlp, y, h, ...)
 }
 
-#' @title ELM network for THieF.
+#' @title ELM network for THieF
 #' @description Function for ELM forecasting with Temporal Hierarchies.
 #'
 #' @param y Input time series. Can be ts or msts object.

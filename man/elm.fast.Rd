@@ -2,7 +2,7 @@
 % Please edit documentation in R/elm.fast.R
 \name{elm.fast}
 \alias{elm.fast}
-\title{ELM (fast) neural network.}
+\title{ELM (fast) neural network}
 \usage{
 elm.fast(
   y,

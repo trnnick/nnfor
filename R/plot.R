@@ -15,7 +15,7 @@
 # Network architecture
 # ---------------------------------------------------------------------------
 
-#' Plot MLP network.
+#' Plot MLP network
 #'
 #' Produces a plot of the MLP network architecture, or of the in-sample fit.
 #'
@@ -36,13 +36,14 @@
 #'  plot(fit, which = "fit")
 #' }
 #' \dontrun{
-#'  fit <- mlp(AirPassengers)
-#'  print(fit)
-#'  plot(fit)
-#'  plot(fit, main = "My network", col.neuron = "gold")
-#'  plot(fit, which = "fit", members.args = list(col = "pink"))
-#'  frc <- forecast(fit,h=36)
-#'  plot(frc)
+#' fit <- mlp(AirPassengers, reps = 5)
+#' plot(fit)                                  # architecture of the first network
+#' plot(fit, r = 3)                           # architecture of the third network
+#' plot(fit, which = "fit")                   # in-sample fit: ensemble and each network
+#' plot(fit, which = "fit", members = FALSE)  # ensemble fit only
+#' # Further arguments customise the plot: see plot_network() and plot_fit()
+#' plot(fit, main = "My network", col.neuron = "gold")
+#' plot(fit, which = "fit", fitted.args = list(col = "red", lwd = 2))
 #' }
 #'
 #' @export
@@ -55,7 +56,7 @@ plot.mlp <- function(x, r = 1, which = c("network", "fit"), ...) {
 
 #' @rdname plot.elm
 #'
-#' @title Plot ELM network.
+#' @title Plot ELM network
 #'
 #' @description Produces a plot of the ELM network architecture, or of the in-sample fit.
 #'
@@ -75,12 +76,10 @@ plot.mlp <- function(x, r = 1, which = c("network", "fit"), ...) {
 #'  plot(fit)
 #' }
 #' \dontrun{
-#'  fit <- elm(AirPassengers)
-#'  print(fit)
-#'  plot(fit)
-#'  plot(fit, which = "fit")
-#'  frc <- forecast(fit,h=36)
-#'  plot(frc)
+#' fit <- elm(AirPassengers, reps = 5, direct = TRUE)
+#' plot(fit)              # unused hidden nodes are dashed, direct connections blue
+#' plot(fit, r = 2)       # architecture of the second network
+#' plot(fit, which = "fit")  # in-sample fit
 #' }
 #'
 #' @export
@@ -117,7 +116,7 @@ network_layout <- function(x, r) {
        title = if (is.elm) "ELM" else "MLP")
 }
 
-#' Plot the architecture of a network.
+#' Plot the architecture of a network
 #'
 #' Draws the inputs, hidden layers and output of one ensemble member of an
 #' \code{\link{mlp}} or \code{\link{elm}} fit. Called by \code{plot(fit)}.
@@ -143,6 +142,17 @@ network_layout <- function(x, r) {
 #' \dontshow{
 #'  fit <- mlp(AirPassengers, reps = 1)
 #'  plot_network(fit, main = "", col.neuron = "white")
+#' }
+#' \dontrun{
+#' fit <- mlp(AirPassengers, reps = 1)
+#' # Colours of the inputs: lags of y, regressors (xreg) and seasonal dummies
+#' plot_network(fit, col.neuron = "white", col.xreg = "skyblue", col.season = "orange")
+#' # Without the layer labels, and with a title of your own
+#' plot_network(fit, axis.args = NULL, main = "")
+#' # Graphical parameters set with par() are respected, e.g. a dark theme
+#' op <- par(bg = "grey15", fg = "white", col.main = "white", col.axis = "white")
+#' plot_network(fit)
+#' par(op)
 #' }
 #' @export
 plot_network <- function(x, r = 1, col.neuron = "lightgrey", col.xreg = "lightblue",
@@ -291,7 +301,7 @@ visible_ylim <- function(series, xlim = NULL) {
   range(vals, na.rm = TRUE)
 }
 
-#' Plot the in-sample fit of a network.
+#' Plot the in-sample fit of a network
 #'
 #' Plots the series together with the ensemble fit and, optionally, the fit
 #' of each ensemble member. This is the plot produced by \code{outplot = TRUE}
@@ -312,6 +322,16 @@ visible_ylim <- function(series, xlim = NULL) {
 #' \dontshow{
 #'  fit <- mlp(AirPassengers, reps = 2)
 #'  plot_fit(fit, main = "Fit", fitted.args = list(col = "red", lwd = 2))
+#' }
+#' \dontrun{
+#' fit <- mlp(AirPassengers, reps = 5)
+#' # Style of the network fits (members) and of the ensemble fit
+#' plot_fit(fit, members.args = list(col = "pink"), fitted.args = list(col = "red", lwd = 2))
+#' # Zoom in with arguments for plot(), e.g. xlim
+#' plot_fit(fit, xlim = c(1958, 1961))
+#' # Add the fit to a plot of your own
+#' plot(AirPassengers, col = "grey40", main = "Air passengers")
+#' plot_fit(fit, add = TRUE, members = FALSE)
 #' }
 #' @export
 plot_fit <- function(object, members = TRUE, add = FALSE, members.args = list(),
@@ -337,7 +357,7 @@ plot_fit <- function(object, members = TRUE, add = FALSE, members.args = list(),
 # Forecasts
 # ---------------------------------------------------------------------------
 
-#' Plot forecasts of a network.
+#' Plot forecasts of a network
 #'
 #' Plots the series, the ensemble forecast and, optionally, the forecasts of
 #' each ensemble member and the in-sample fit.
@@ -358,6 +378,16 @@ plot_fit <- function(object, members = TRUE, add = FALSE, members.args = list(),
 #'  fit <- mlp(AirPassengers, reps = 2)
 #'  frc <- forecast(fit, h = 12)
 #'  plot(frc, members = FALSE, main = "", mean.args = list(col = "red"))
+#' }
+#' \dontrun{
+#' fit <- mlp(AirPassengers, reps = 5)
+#' frc <- forecast(fit, h = 24)
+#' plot(frc)                                # forecasts of the ensemble and of each network
+#' plot(frc, members = FALSE, fitted = TRUE)  # ensemble only, with the in-sample fit
+#' plot(frc, xlim = c(1958, 1963), mean.args = list(col = "red"))  # zoom, custom style
+#' # Add the forecasts to a plot of your own
+#' plot(AirPassengers, xlim = c(1949, 1963), ylim = c(100, 750))
+#' plot(frc, add = TRUE, members = FALSE)
 #' }
 #' @export
 #' @method plot forecast.net
@@ -398,7 +428,7 @@ plot.forecast.net <- function(x, members = TRUE, fitted = FALSE, add = FALSE,
 # elm.fast
 # ---------------------------------------------------------------------------
 
-#' Plot ELM (fast) fit.
+#' Plot ELM (fast) fit
 #'
 #' Scatter plot of actual against fitted values of an \code{\link{elm.fast}} network.
 #'
@@ -411,6 +441,14 @@ plot.forecast.net <- function(x, members = TRUE, fitted = FALSE, add = FALSE,
 #'
 #' @return Invisibly returns \code{x}.
 #' @seealso \code{\link{elm.fast}}.
+#' @examples
+#' \dontrun{
+#' x <- matrix(rnorm(300), 100, 3)
+#' y <- x %*% c(1, -1, 0.5) + rnorm(100, sd = 0.3)
+#' fit <- elm.fast(y, x, reps = 5)
+#' plot(fit)                                     # fitted against actual values
+#' plot(fit, members = FALSE, line.args = NULL)  # ensemble only, no reference line
+#' }
 #' @export
 #' @method plot elm.fast
 plot.elm.fast <- function(x, members = TRUE, members.args = list(), fitted.args = list(),

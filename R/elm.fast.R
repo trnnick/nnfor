@@ -1,4 +1,4 @@
-#' @title ELM (fast) neural network.
+#' @title ELM (fast) neural network
 #' @description Fit ELM (fast) neural network. This is an ELM implementation that does not rely on neuralnets package.
 #'
 #' @param y Target variable.
@@ -181,7 +181,7 @@ fast.sig <- function(x) {
 }
 
 #' @rdname predict.elm.fast
-#' @title Predictions for ELM (fast) network.
+#' @title Predictions for ELM (fast) network
 #' @description Calculate predictions for ELM (fast) network.
 #'
 #' @param object ELM network object, produced using \code{\link{elm.fast}}.
@@ -246,7 +246,7 @@ predict.elm.fast <- function(object, newx, na.rm = FALSE, ...) {
   for (r in 1:reps) {
     Y.all[, r] <- elm_fast_output(
       elm_fast_raw(newx, object$W.in[[r]], object$W[[r]], object$b[r],
-                                object$W.dct[[r]], object$direct),
+                   object$W.dct[[r]], object$direct),
       object$minmax, object$output)
   }
 

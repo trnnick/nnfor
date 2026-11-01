@@ -2,7 +2,7 @@
 % Please edit documentation in R/net.thief.R
 \name{mlp.thief}
 \alias{mlp.thief}
-\title{MLP network for THieF.}
+\title{MLP network for THieF}
 \usage{
 mlp.thief(y, h = NULL, ...)
 }

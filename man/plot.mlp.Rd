@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot.mlp}
 \alias{plot.mlp}
-\title{Plot MLP network.}
+\title{Plot MLP network}
 \usage{
 \method{plot}{mlp}(x, r = 1, which = c("network", "fit"), ...)
 }
@@ -31,13 +31,14 @@ Neurons are coloured with \code{"lightgrey"}. Seasonal dummies are coloured with
  plot(fit, which = "fit")
 }
 \dontrun{
- fit <- mlp(AirPassengers)
- print(fit)
- plot(fit)
- plot(fit, main = "My network", col.neuron = "gold")
- plot(fit, which = "fit", members.args = list(col = "pink"))
- frc <- forecast(fit,h=36)
- plot(frc)
+fit <- mlp(AirPassengers, reps = 5)
+plot(fit)                                  # architecture of the first network
+plot(fit, r = 3)                           # architecture of the third network
+plot(fit, which = "fit")                   # in-sample fit: ensemble and each network
+plot(fit, which = "fit", members = FALSE)  # ensemble fit only
+# Further arguments customise the plot: see plot_network() and plot_fit()
+plot(fit, main = "My network", col.neuron = "gold")
+plot(fit, which = "fit", fitted.args = list(col = "red", lwd = 2))
 }
 
 }

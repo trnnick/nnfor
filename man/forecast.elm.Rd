@@ -2,7 +2,7 @@
 % Please edit documentation in R/forecast.net.R
 \name{forecast.elm}
 \alias{forecast.elm}
-\title{Forecast using ELM neural network.}
+\title{Forecast using ELM neural network}
 \usage{
 \method{forecast}{elm}(object, h = NULL, y = NULL, xreg = NULL, ...)
 }
@@ -45,6 +45,15 @@ Create forecasts using ELM neural networks.
  plot(fit)
  frc <- forecast(fit,h=36)
  plot(frc)
+}
+\dontrun{
+# Networks with regressors (xreg) need their values over the forecast horizon
+set.seed(1)
+z <- cbind(promo = rbinom(156, 1, 0.2))
+y <- AirPassengers + 30 * z[1:144, "promo"]
+fit <- elm(y, xreg = z, xreg.lags = list(0))
+frc <- forecast(fit, h = 12, xreg = z)
+plot(frc)
 }
 
 }
