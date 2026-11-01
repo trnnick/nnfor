@@ -283,9 +283,11 @@ fit <- mlp(AirPassengers, lags = 1:12, keep = c(TRUE, rep(FALSE, 10), TRUE))
 # Number of hidden nodes (hd)
 fit <- mlp(AirPassengers, hd = 10)          # one hidden layer of 10 nodes
 fit <- mlp(AirPassengers, hd = c(8, 4))     # two hidden layers, of 8 and 4 nodes
-fit <- mlp(AirPassengers, hd.auto.type = "valid", hd.max = 6)  # chosen on a 20\% validation sample
+fit <- mlp(AirPassengers, hd.auto.type = "valid",
+           hd.max = 6)  # chosen on a 20\% validation sample
 fit$MSEH                                    # validation error for each number of nodes
-fit <- mlp(AirPassengers, hd.auto.type = "cv", hd.max = 4, reps = 5)  # 5-fold cross-validation (slow)
+fit <- mlp(AirPassengers, hd.auto.type = "cv",
+           hd.max = 4, reps = 5)  # 5-fold cross-validation (slow)
 fit <- mlp(AirPassengers, hd.auto.type = "elm")  # estimated with an ELM (experimental)
 # With backend = "torch", hd can also define a custom architecture: see the
 # torch examples below and Details.
