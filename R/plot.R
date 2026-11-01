@@ -369,6 +369,7 @@ plot_fit <- function(object, members = TRUE, add = FALSE, members.args = list(),
 #' @param members.args List of graphical parameters for member forecasts (default \code{list(col = "grey")}).
 #' @param mean.args List of graphical parameters for the ensemble forecast (default \code{list(col = "blue", lwd = 2)}).
 #' @param fitted.args List of graphical parameters for the in-sample fit (default \code{list(col = "blue", lty = 2)}).
+#' @param restrict Logical. If \code{TRUE} (default), the vertical axis is limited to at most twice the range of the actuals and the ensemble forecast (that range, extended by half of it on each side), so that a poorly trained member, which the ensemble combination mostly ignores, cannot stretch the plot. Plots that already fit within that limit are unchanged. Use \code{FALSE} to show every member in full. Ignored when \code{add = TRUE} or when \code{ylim} is given.
 #' @param ... Arguments passed to \code{\link[graphics]{plot}} when drawing the series, overriding the defaults (e.g. \code{main}, \code{xlim}, \code{ylim}, \code{col}).
 #'
 #' @return Invisibly returns \code{x}.
@@ -383,6 +384,7 @@ plot_fit <- function(object, members = TRUE, add = FALSE, members.args = list(),
 #' fit <- mlp(AirPassengers, reps = 5)
 #' frc <- forecast(fit, h = 24)
 #' plot(frc)                                # forecasts of the ensemble and of each network
+#' plot(frc, restrict = FALSE)              # no limit on the axis, to see every network in full
 #' plot(frc, members = FALSE, fitted = TRUE)  # ensemble only, with the in-sample fit
 #' plot(frc, xlim = c(1958, 1963), mean.args = list(col = "red"))  # zoom, custom style
 #' # Add the forecasts to a plot of your own
@@ -393,13 +395,19 @@ plot_fit <- function(object, members = TRUE, add = FALSE, members.args = list(),
 #' @method plot forecast.net
 plot.forecast.net <- function(x, members = TRUE, fitted = FALSE, add = FALSE,
                               members.args = list(), mean.args = list(),
-                              fitted.args = list(), ...) {
+                              fitted.args = list(), restrict = TRUE, ...) {
   method <- if (any(x$method == "elm")) "elm" else x$method[1]
   all <- x$all.mean
   members <- members && NCOL(all) > 0
   if (!add) {
     xl <- list(...)[["xlim"]] %||% range(time(x$x), time(x$mean))
     yl <- visible_ylim(list(x$x, x$mean, if (members) all, if (fitted) x$fitted), xl)
+    if (restrict) {
+      # At most twice the range of the actuals and the ensemble forecast
+      base <- visible_ylim(list(x$x, x$mean), xl)
+      w <- diff(base)
+      if (w > 0) yl <- c(max(yl[1], base[1] - w / 2), min(yl[2], base[2] + w / 2))
+    }
     do.call(plot, merge_args(list(x = x$x, xlim = xl, ylim = yl, xlab = "", ylab = "",
                                   main = paste("Forecasts from", toupper(method))),
                              list(...)))

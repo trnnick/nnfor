@@ -12,6 +12,7 @@
   members.args = list(),
   mean.args = list(),
   fitted.args = list(),
+  restrict = TRUE,
   ...
 )
 }
@@ -29,6 +30,8 @@
 \item{mean.args}{List of graphical parameters for the ensemble forecast (default \code{list(col = "blue", lwd = 2)}).}
 
 \item{fitted.args}{List of graphical parameters for the in-sample fit (default \code{list(col = "blue", lty = 2)}).}
+
+\item{restrict}{Logical. If \code{TRUE} (default), the vertical axis is limited to at most twice the range of the actuals and the ensemble forecast (that range, extended by half of it on each side), so that a poorly trained member, which the ensemble combination mostly ignores, cannot stretch the plot. Plots that already fit within that limit are unchanged. Use \code{FALSE} to show every member in full. Ignored when \code{add = TRUE} or when \code{ylim} is given.}
 
 \item{...}{Arguments passed to \code{\link[graphics]{plot}} when drawing the series, overriding the defaults (e.g. \code{main}, \code{xlim}, \code{ylim}, \code{col}).}
 }
@@ -49,6 +52,7 @@ each ensemble member and the in-sample fit.
 fit <- mlp(AirPassengers, reps = 5)
 frc <- forecast(fit, h = 24)
 plot(frc)                                # forecasts of the ensemble and of each network
+plot(frc, restrict = FALSE)              # no limit on the axis, to see every network in full
 plot(frc, members = FALSE, fitted = TRUE)  # ensemble only, with the in-sample fit
 plot(frc, xlim = c(1958, 1963), mean.args = list(col = "red"))  # zoom, custom style
 # Add the forecasts to a plot of your own
